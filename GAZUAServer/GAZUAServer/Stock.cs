@@ -1,0 +1,50 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GAZUAServer
+{
+    class Stock
+    {
+        private string name;
+        private List<int> priceList;
+        private List<int> volumeList;
+        private int turn;
+        private int startDate;
+        
+        public string Name { get => name; set => name = value; }
+        public int Turn { get => turn; set => turn = value; }
+        public int StartDate { get => startDate; set => startDate = value; }
+
+        public List<int> PriceList
+        {
+            get { return priceList.GetRange(StartDate, 50); }
+            set { priceList = value; }
+        }
+        public int Price
+        {
+            get { return priceList[StartDate + Turn]; }
+        }
+        public List<int> VolumeList
+        {
+            get { return volumeList.GetRange(StartDate, 50); }
+            set { volumeList = value; }
+        }
+        public int Volume
+        {
+            get { return volumeList[StartDate + Turn]; }
+        }
+
+        public Stock(string name, List<int> priceList, List<int> volumeList, int startDate)
+        {
+            Name = name;
+            PriceList = priceList;
+            VolumeList = volumeList;
+            Turn = 0;
+            StartDate = startDate;
+        }
+    }
+}
