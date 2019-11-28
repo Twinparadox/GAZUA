@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            this.chartStock = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.lvStockState = new System.Windows.Forms.ListView();
             this.lvUserState = new System.Windows.Forms.ListView();
             this.groupBoxStockData = new System.Windows.Forms.GroupBox();
@@ -41,31 +41,46 @@
             this.lvUserRanking = new System.Windows.Forms.ListView();
             this.groupBoxServerInfo = new System.Windows.Forms.GroupBox();
             this.rtbServerState = new System.Windows.Forms.RichTextBox();
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
+            this.columnStockName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHigh = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnLow = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnPrice = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnSub = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnSubRatio = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            ((System.ComponentModel.ISupportInitialize)(this.chartStock)).BeginInit();
             this.groupBoxStockData.SuspendLayout();
             this.groupBoxUserData.SuspendLayout();
             this.groupBoxRank.SuspendLayout();
             this.groupBoxServerInfo.SuspendLayout();
             this.SuspendLayout();
             // 
-            // chart1
+            // chartStock
             // 
-            chartArea4.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea4);
-            legend4.Name = "Legend1";
-            this.chart1.Legends.Add(legend4);
-            this.chart1.Location = new System.Drawing.Point(4, 20);
-            this.chart1.Name = "chart1";
-            series4.ChartArea = "ChartArea1";
-            series4.Legend = "Legend1";
-            series4.Name = "Series1";
-            this.chart1.Series.Add(series4);
-            this.chart1.Size = new System.Drawing.Size(600, 300);
-            this.chart1.TabIndex = 0;
-            this.chart1.Text = "chart1";
+            chartArea1.Name = "ChartArea1";
+            this.chartStock.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.chartStock.Legends.Add(legend1);
+            this.chartStock.Location = new System.Drawing.Point(4, 20);
+            this.chartStock.Name = "chartStock";
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            this.chartStock.Series.Add(series1);
+            this.chartStock.Size = new System.Drawing.Size(600, 300);
+            this.chartStock.TabIndex = 0;
+            this.chartStock.Text = "chart1";
+            this.chartStock.Click += new System.EventHandler(this.chart1_Click);
             // 
             // lvStockState
             // 
+            this.lvStockState.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnStockName,
+            this.columnPrice,
+            this.columnSub,
+            this.columnSubRatio,
+            this.columnHigh,
+            this.columnLow});
             this.lvStockState.HideSelection = false;
             this.lvStockState.Location = new System.Drawing.Point(4, 331);
             this.lvStockState.Name = "lvStockState";
@@ -85,7 +100,7 @@
             // groupBoxStockData
             // 
             this.groupBoxStockData.Controls.Add(this.lvStockState);
-            this.groupBoxStockData.Controls.Add(this.chart1);
+            this.groupBoxStockData.Controls.Add(this.chartStock);
             this.groupBoxStockData.Location = new System.Drawing.Point(12, 190);
             this.groupBoxStockData.Name = "groupBoxStockData";
             this.groupBoxStockData.Size = new System.Drawing.Size(610, 509);
@@ -150,6 +165,35 @@
             this.rtbServerState.TabIndex = 0;
             this.rtbServerState.Text = "";
             // 
+            // columnStockName
+            // 
+            this.columnStockName.Text = "기업명";
+            // 
+            // columnHigh
+            // 
+            this.columnHigh.DisplayIndex = 1;
+            this.columnHigh.Text = "기간 내 고가";
+            // 
+            // columnLow
+            // 
+            this.columnLow.DisplayIndex = 2;
+            this.columnLow.Text = "기간 내 저가";
+            // 
+            // columnPrice
+            // 
+            this.columnPrice.DisplayIndex = 3;
+            this.columnPrice.Text = "현재가";
+            // 
+            // columnSub
+            // 
+            this.columnSub.DisplayIndex = 4;
+            this.columnSub.Text = "전일비";
+            // 
+            // columnSubRatio
+            // 
+            this.columnSubRatio.DisplayIndex = 5;
+            this.columnSubRatio.Text = "등락률";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -166,7 +210,7 @@
             this.Text = "GAZUA - Server";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.chartStock)).EndInit();
             this.groupBoxStockData.ResumeLayout(false);
             this.groupBoxUserData.ResumeLayout(false);
             this.groupBoxRank.ResumeLayout(false);
@@ -177,7 +221,7 @@
 
         #endregion
 
-        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chartStock;
         private System.Windows.Forms.ListView lvStockState;
         private System.Windows.Forms.ListView lvUserState;
         private System.Windows.Forms.GroupBox groupBoxStockData;
@@ -187,6 +231,12 @@
         private System.Windows.Forms.ListView lvUserRanking;
         private System.Windows.Forms.GroupBox groupBoxServerInfo;
         private System.Windows.Forms.RichTextBox rtbServerState;
+        private System.Windows.Forms.ColumnHeader columnStockName;
+        private System.Windows.Forms.ColumnHeader columnPrice;
+        private System.Windows.Forms.ColumnHeader columnSub;
+        private System.Windows.Forms.ColumnHeader columnSubRatio;
+        private System.Windows.Forms.ColumnHeader columnHigh;
+        private System.Windows.Forms.ColumnHeader columnLow;
     }
 }
 

@@ -37,6 +37,8 @@ namespace GAZUAServer
         private void MainForm_Load(object sender, EventArgs e)
         {
             StockList = CSVParse.ReadCSVFile();
+            DrawLineChart(0);
+
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -95,9 +97,28 @@ namespace GAZUAServer
             }
         }
 
+        public void DrawLineChart(int stockIdx)
+        {
+            // Draw Line Chart
+            // Click ListView Item or ..
+
+            Stock selectedStock = stockList[stockIdx];
+            List<int> priceList = selectedStock.PriceList;
+
+            for (int i = 0; i < priceList.Capacity; i++)
+            {
+                chartStock.Series[0].Points.AddXY(i, priceList[i]);
+            }
+        }
+
         private void CalculateCounter()
         {
             counter--;
+        }
+
+        private void chart1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
