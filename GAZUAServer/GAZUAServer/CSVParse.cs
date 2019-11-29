@@ -22,32 +22,43 @@ namespace GAZUAServer
             List<Stock> sList = new List<Stock>();
 
             path = "./stockdata/";
-            string strFile = path + "SAMSUNG_Electronics.csv";
 
-            using (FileStream fs = new FileStream(strFile, FileMode.Open))
+            // If the directory exists,
+            if (System.IO.Directory.Exists(path))
             {
-                List<int> price = new List<int>();
-                List<int> volume = new List<int>();
-                using(StreamReader sr = new StreamReader(fs, Encoding.UTF8, false))
+                System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(path);
+
+                // Get All File
+                foreach (var file in di.GetFiles())
                 {
-                    string strLineValue = null;
+                    string strFile = path + file;
 
-                    while((strLineValue = sr.ReadLine()) != null)
+                    using (FileStream fs = new FileStream(strFile, FileMode.Open))
                     {
-                        // structure of csv file from Yahoo Finance
-                        // Date,Open,High,Low,Close,Adj Close, Volume
-                        if (string.IsNullOrEmpty(strLineValue))
-                            break;
-                        string[] data = strLineValue.Split(',');
+                        List<int> price = new List<int>();
+                        List<int> volume = new List<int>();
+                        using (StreamReader sr = new StreamReader(fs, Encoding.UTF8, false))
+                        {
+                            string strLineValue = null;
 
-                        int p = (int)(Double.Parse(data[4]));
-                        int vol = (int)(Double.Parse(data[6]));
+                            while ((strLineValue = sr.ReadLine()) != null)
+                            {
+                                // structure of csv file from Yahoo Finance
+                                // Date,Open,High,Low,Close,Adj Close, Volume
+                                if (string.IsNullOrEmpty(strLineValue))
+                                    break;
+                                string[] data = strLineValue.Split(',');
 
-                        price.Add(p);
-                        volume.Add(vol);
+                                int p = (int)(Double.Parse(data[4]));
+                                int vol = (int)(Double.Parse(data[6]));
+
+                                price.Add(p);
+                                volume.Add(vol);
+                            }
+                        }
+                        sList.Add(new Stock("삼성전자", price, volume, 300));
                     }
                 }
-                sList.Add(new Stock("삼성전자", price, volume, 300));
             }
             return sList;
         }

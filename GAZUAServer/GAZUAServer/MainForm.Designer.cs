@@ -33,6 +33,13 @@
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.chartStock = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.lvStockState = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnStockName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnPrice = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnSub = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnSubRatio = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHigh = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnLow = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lvUserState = new System.Windows.Forms.ListView();
             this.groupBoxStockData = new System.Windows.Forms.GroupBox();
             this.groupBoxUserData = new System.Windows.Forms.GroupBox();
@@ -41,12 +48,6 @@
             this.lvUserRanking = new System.Windows.Forms.ListView();
             this.groupBoxServerInfo = new System.Windows.Forms.GroupBox();
             this.rtbServerState = new System.Windows.Forms.RichTextBox();
-            this.columnStockName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHigh = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnLow = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnPrice = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnSub = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnSubRatio = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.chartStock)).BeginInit();
             this.groupBoxStockData.SuspendLayout();
             this.groupBoxUserData.SuspendLayout();
@@ -75,18 +76,65 @@
             // lvStockState
             // 
             this.lvStockState.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
             this.columnStockName,
             this.columnPrice,
             this.columnSub,
             this.columnSubRatio,
             this.columnHigh,
             this.columnLow});
+            this.lvStockState.FullRowSelect = true;
+            this.lvStockState.GridLines = true;
             this.lvStockState.HideSelection = false;
             this.lvStockState.Location = new System.Drawing.Point(4, 331);
             this.lvStockState.Name = "lvStockState";
+            this.lvStockState.ShowItemToolTips = true;
             this.lvStockState.Size = new System.Drawing.Size(600, 172);
             this.lvStockState.TabIndex = 1;
             this.lvStockState.UseCompatibleStateImageBehavior = false;
+            this.lvStockState.View = System.Windows.Forms.View.Details;
+            this.lvStockState.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvStockState_MouseDoubleClick);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Width = 0;
+            // 
+            // columnStockName
+            // 
+            this.columnStockName.Tag = "";
+            this.columnStockName.Text = "기업명";
+            this.columnStockName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnStockName.Width = 145;
+            // 
+            // columnPrice
+            // 
+            this.columnPrice.Text = "현재가";
+            this.columnPrice.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnPrice.Width = 100;
+            // 
+            // columnSub
+            // 
+            this.columnSub.Text = "전일비";
+            this.columnSub.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnSub.Width = 100;
+            // 
+            // columnSubRatio
+            // 
+            this.columnSubRatio.Text = "등락률";
+            this.columnSubRatio.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnSubRatio.Width = 50;
+            // 
+            // columnHigh
+            // 
+            this.columnHigh.Text = "기간 내 고가";
+            this.columnHigh.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnHigh.Width = 100;
+            // 
+            // columnLow
+            // 
+            this.columnLow.Text = "기간 내 저가";
+            this.columnLow.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnLow.Width = 100;
             // 
             // lvUserState
             // 
@@ -165,35 +213,6 @@
             this.rtbServerState.TabIndex = 0;
             this.rtbServerState.Text = "";
             // 
-            // columnStockName
-            // 
-            this.columnStockName.Text = "기업명";
-            // 
-            // columnHigh
-            // 
-            this.columnHigh.DisplayIndex = 1;
-            this.columnHigh.Text = "기간 내 고가";
-            // 
-            // columnLow
-            // 
-            this.columnLow.DisplayIndex = 2;
-            this.columnLow.Text = "기간 내 저가";
-            // 
-            // columnPrice
-            // 
-            this.columnPrice.DisplayIndex = 3;
-            this.columnPrice.Text = "현재가";
-            // 
-            // columnSub
-            // 
-            this.columnSub.DisplayIndex = 4;
-            this.columnSub.Text = "전일비";
-            // 
-            // columnSubRatio
-            // 
-            this.columnSubRatio.DisplayIndex = 5;
-            this.columnSubRatio.Text = "등락률";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -237,6 +256,7 @@
         private System.Windows.Forms.ColumnHeader columnSubRatio;
         private System.Windows.Forms.ColumnHeader columnHigh;
         private System.Windows.Forms.ColumnHeader columnLow;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
     }
 }
 

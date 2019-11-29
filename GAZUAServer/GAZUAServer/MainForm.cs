@@ -34,23 +34,27 @@ namespace GAZUAServer
             InitializeComponent();
         }
 
+        #region MainForm
         private void MainForm_Load(object sender, EventArgs e)
         {
             StockList = CSVParse.ReadCSVFile();
             DrawLineChart(0);
 
+            UpdateListViewStockState();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
 
         }
+        #endregion
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
 
+        #region Socket Programming
         private void InitSocket()
         {
             server = new TcpListener(IPAddress.Any, 9999);
@@ -96,7 +100,62 @@ namespace GAZUAServer
                 rtbServerState.AppendText(text + Environment.NewLine);
             }
         }
+        #endregion
 
+        #region ListViewStockState
+        public void UpdateListViewStockState()
+        {
+            lvStockState.BeginUpdate();
+
+            int idx = 0;
+            foreach(Stock stock in StockList)
+            {
+                List<int> priceList = stock.PriceList;
+                int count = priceList.Count;
+                int curPrice = priceList.Last();
+                int prevPrice = priceList.ElementAt(count - 2);
+
+                int sub = curPrice - prevPrice;
+                float subRatio = (float)sub / prevPrice * 100;
+
+                int minPrice = priceList.Min();
+                int maxPrice = priceList.Max();
+
+                ListViewItem lvItem = new ListViewItem(idx.ToString());
+                lvItem.SubItems.Add(stock.Name);
+                lvItem.SubItems.Add(curPrice.ToString());
+                lvItem.SubItems.Add(sub.ToString());
+                lvItem.SubItems.Add(subRatio.ToString("N2"));
+                lvItem.SubItems.Add(maxPrice.ToString());
+                lvItem.SubItems.Add(minPrice.ToString());
+                lvStockState.Items.Add(lvItem);
+                idx++;
+            }
+
+            lvStockState.EndUpdate();
+        }
+
+        private void lvStockState_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            // 특정 종목을 더블클릭하면 그래프를 그려줌
+            if (lvStockState.SelectedItems.Count == 1)
+            {
+                ListView.SelectedListViewItemCollection items = lvStockState.SelectedItems;
+                ListViewItem lvItem = items[0];
+
+                try
+                {
+                    DrawLineChart(Int32.Parse(lvItem.SubItems[0].Text));
+                }
+                catch
+                {
+                    MessageBox.Show("Error Drawing Chart");
+                }
+            }
+        }
+        #endregion
+
+        #region Line Chart
         public void DrawLineChart(int stockIdx)
         {
             // Draw Line Chart
@@ -104,6 +163,14 @@ namespace GAZUAServer
 
             Stock selectedStock = stockList[stockIdx];
             List<int> priceList = selectedStock.PriceList;
+
+            int minPrice = priceList.Min();
+            int maxPrice = priceList.Max();
+
+            int minChart = CalculateThreshold(minPrice, 1);
+
+            chartStock.Series[0].Points.Clear();
+            chartStock.ChartAreas[0].AxisY.Minimum = minChart;
 
             for (int i = 0; i < priceList.Capacity; i++)
             {
@@ -115,6 +182,29 @@ namespace GAZUAServer
         {
             counter--;
         }
+
+        public int CalculateThreshold(int price, int flag)
+        {
+            int comp = 1;
+            while(comp<price)
+            {
+                comp *= 10;
+            }
+
+            comp /= 10;
+            float thPrice = (int)((float)price / comp);
+            thPrice *= comp;
+
+            if(flag == 1)
+            {
+                return (int)thPrice;
+            }
+            else
+            {
+                return (int)thPrice;
+            }
+        }
+        #endregion
 
         private void chart1_Click(object sender, EventArgs e)
         {
