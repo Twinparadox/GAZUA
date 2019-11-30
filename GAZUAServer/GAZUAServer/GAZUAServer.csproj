@@ -82,31 +82,31 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="stockdata\AhnLab.csv" />
-    <None Include="stockdata\AMOREPACIFIC.csv" />
-    <None Include="stockdata\Celltrion.csv" />
-    <None Include="stockdata\Emart.csv" />
-    <None Include="stockdata\HYUNDAI_Motors.csv" />
-    <None Include="stockdata\JYP_Ent.csv" />
-    <None Include="stockdata\Kakao.csv" />
-    <None Include="stockdata\KB_Financial.csv" />
-    <None Include="stockdata\KIA_Motors.csv" />
-    <None Include="stockdata\KoreanAir.csv" />
+    <None Include="stockdata\안랩.csv" />
+    <None Include="stockdata\아모레퍼시픽.csv" />
+    <None Include="stockdata\셀트리온.csv" />
+    <None Include="stockdata\이마트.csv" />
+    <None Include="stockdata\현대차.csv" />
+    <None Include="stockdata\JYP Ent.csv" />
+    <None Include="stockdata\카카오.csv" />
+    <None Include="stockdata\KB금융.csv" />
+    <None Include="stockdata\기아차.csv" />
+    <None Include="stockdata\대한항공.csv" />
     <None Include="stockdata\KT.csv" />
-    <None Include="stockdata\LG_Chem.csv" />
-    <None Include="stockdata\LG_Household.csv" />
-    <None Include="stockdata\Lotte_Chem.csv" />
+    <None Include="stockdata\LG화학.csv" />
+    <None Include="stockdata\LG생활건강.csv" />
+    <None Include="stockdata\롯데케미칼.csv" />
     <None Include="stockdata\NAVER.csv" />
-    <None Include="stockdata\NCSoft.csv" />
-    <None Include="stockdata\Netmarble.csv" />
-    <None Include="stockdata\Ottogi.csv" />
-    <None Include="stockdata\POSCO.csv" />
-    <None Include="stockdata\SAMSUNG_Electronics.csv" />
-    <None Include="stockdata\SAMSUNG_SDI.csv" />
-    <None Include="stockdata\SHINHAN_Financial.csv" />
-    <None Include="stockdata\SK_Hynix.csv" />
-    <None Include="stockdata\SK_Telecom.csv" />
-    <None Include="stockdata\Yuhan.csv" />
+    <None Include="stockdata\엔씨소프트.csv" />
+    <None Include="stockdata\넷마블.csv" />
+    <None Include="stockdata\오뚜기.csv" />
+    <None Include="stockdata\포스코.csv" />
+    <None Include="stockdata\삼성전자.csv" />
+    <None Include="stockdata\삼성SDI.csv" />
+    <None Include="stockdata\신한지주.csv" />
+    <None Include="stockdata\SK하이닉스.csv" />
+    <None Include="stockdata\SK텔레콤.csv" />
+    <None Include="stockdata\유한양행.csv" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

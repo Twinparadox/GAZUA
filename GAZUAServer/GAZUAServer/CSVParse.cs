@@ -56,7 +56,7 @@ namespace GAZUAServer
                                 volume.Add(vol);
                             }
                         }
-                        sList.Add(new Stock("삼성전자", price, volume, 300));
+                        sList.Add(new Stock(Path.GetFileNameWithoutExtension(strFile), price, volume, 300));
                     }
                 }
             }

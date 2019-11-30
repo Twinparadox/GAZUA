@@ -57,6 +57,8 @@
             // 
             // chartStock
             // 
+            chartArea1.AxisX.MajorGrid.LineWidth = 0;
+            chartArea1.AxisY.MajorGrid.LineWidth = 0;
             chartArea1.Name = "ChartArea1";
             this.chartStock.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";

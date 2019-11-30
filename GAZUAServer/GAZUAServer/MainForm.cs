@@ -17,7 +17,8 @@ namespace GAZUAServer
     {
         TcpListener server = null;
         TcpClient client = null;
-        static int counter = 0;
+
+        public static int startTurn = 200;
 
         private int portNum;
 
@@ -37,6 +38,9 @@ namespace GAZUAServer
         #region MainForm
         private void MainForm_Load(object sender, EventArgs e)
         {
+            Turn = 0;
+            PortNum = 5000;
+
             StockList = CSVParse.ReadCSVFile();
             DrawLineChart(0);
 
@@ -171,6 +175,7 @@ namespace GAZUAServer
 
             chartStock.Series[0].Points.Clear();
             chartStock.ChartAreas[0].AxisY.Minimum = minChart;
+            chartStock.ChartAreas[0].AxisX.Minimum = Turn;
 
             for (int i = 0; i < priceList.Capacity; i++)
             {
