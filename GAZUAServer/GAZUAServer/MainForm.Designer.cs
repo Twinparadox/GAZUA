@@ -43,11 +43,19 @@
             this.lvUserState = new System.Windows.Forms.ListView();
             this.groupBoxStockData = new System.Windows.Forms.GroupBox();
             this.groupBoxUserData = new System.Windows.Forms.GroupBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnListen = new System.Windows.Forms.Button();
             this.groupBoxRank = new System.Windows.Forms.GroupBox();
             this.lvUserRanking = new System.Windows.Forms.ListView();
             this.groupBoxServerInfo = new System.Windows.Forms.GroupBox();
             this.rtbServerState = new System.Windows.Forms.RichTextBox();
+            this.btnClose = new System.Windows.Forms.Button();
+            this.btnGameStart = new System.Windows.Forms.Button();
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnUserName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnUserMoney = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnUserStock = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnUserAsset = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnReady = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.chartStock)).BeginInit();
             this.groupBoxStockData.SuspendLayout();
             this.groupBoxUserData.SuspendLayout();
@@ -95,6 +103,7 @@
             this.lvStockState.TabIndex = 1;
             this.lvStockState.UseCompatibleStateImageBehavior = false;
             this.lvStockState.View = System.Windows.Forms.View.Details;
+            this.lvStockState.SelectedIndexChanged += new System.EventHandler(this.lvStockState_SelectedIndexChanged);
             this.lvStockState.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.lvStockState_MouseDoubleClick);
             // 
             // columnHeader1
@@ -140,12 +149,21 @@
             // 
             // lvUserState
             // 
+            this.lvUserState.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader2,
+            this.columnUserName,
+            this.columnUserMoney,
+            this.columnUserStock,
+            this.columnUserAsset,
+            this.columnReady});
             this.lvUserState.HideSelection = false;
             this.lvUserState.Location = new System.Drawing.Point(4, 18);
             this.lvUserState.Name = "lvUserState";
+            this.lvUserState.ShowItemToolTips = true;
             this.lvUserState.Size = new System.Drawing.Size(600, 148);
             this.lvUserState.TabIndex = 3;
             this.lvUserState.UseCompatibleStateImageBehavior = false;
+            this.lvUserState.View = System.Windows.Forms.View.Details;
             // 
             // groupBoxStockData
             // 
@@ -168,14 +186,15 @@
             this.groupBoxUserData.TabStop = false;
             this.groupBoxUserData.Text = "유저 정보";
             // 
-            // button1
+            // btnListen
             // 
-            this.button1.Location = new System.Drawing.Point(634, 521);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(298, 49);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btnListen.Location = new System.Drawing.Point(628, 521);
+            this.btnListen.Name = "btnListen";
+            this.btnListen.Size = new System.Drawing.Size(145, 49);
+            this.btnListen.TabIndex = 7;
+            this.btnListen.Text = "서버 시작";
+            this.btnListen.UseVisualStyleBackColor = true;
+            this.btnListen.Click += new System.EventHandler(this.btnListen_Click);
             // 
             // groupBoxRank
             // 
@@ -215,14 +234,70 @@
             this.rtbServerState.TabIndex = 0;
             this.rtbServerState.Text = "";
             // 
+            // btnClose
+            // 
+            this.btnClose.Location = new System.Drawing.Point(787, 521);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(145, 49);
+            this.btnClose.TabIndex = 10;
+            this.btnClose.Text = "서버 종료";
+            this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            // 
+            // btnGameStart
+            // 
+            this.btnGameStart.Location = new System.Drawing.Point(628, 632);
+            this.btnGameStart.Name = "btnGameStart";
+            this.btnGameStart.Size = new System.Drawing.Size(144, 49);
+            this.btnGameStart.TabIndex = 11;
+            this.btnGameStart.Text = "게임 시작";
+            this.btnGameStart.UseVisualStyleBackColor = true;
+            this.btnGameStart.Click += new System.EventHandler(this.btnGameStart_Click);
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Width = 0;
+            // 
+            // columnUserName
+            // 
+            this.columnUserName.Text = "ID";
+            this.columnUserName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnUserName.Width = 100;
+            // 
+            // columnUserMoney
+            // 
+            this.columnUserMoney.Text = "보유자산(현금)";
+            this.columnUserMoney.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnUserMoney.Width = 150;
+            // 
+            // columnUserStock
+            // 
+            this.columnUserStock.Text = "보유자산(주식)";
+            this.columnUserStock.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnUserStock.Width = 150;
+            // 
+            // columnUserAsset
+            // 
+            this.columnUserAsset.Text = "보유자산(총액)";
+            this.columnUserAsset.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnUserAsset.Width = 150;
+            // 
+            // columnReady
+            // 
+            this.columnReady.Text = "상태";
+            this.columnReady.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnReady.Width = 45;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(944, 711);
+            this.Controls.Add(this.btnGameStart);
+            this.Controls.Add(this.btnClose);
             this.Controls.Add(this.groupBoxServerInfo);
             this.Controls.Add(this.groupBoxRank);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnListen);
             this.Controls.Add(this.groupBoxUserData);
             this.Controls.Add(this.groupBoxStockData);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -247,7 +322,7 @@
         private System.Windows.Forms.ListView lvUserState;
         private System.Windows.Forms.GroupBox groupBoxStockData;
         private System.Windows.Forms.GroupBox groupBoxUserData;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnListen;
         private System.Windows.Forms.GroupBox groupBoxRank;
         private System.Windows.Forms.ListView lvUserRanking;
         private System.Windows.Forms.GroupBox groupBoxServerInfo;
@@ -259,6 +334,14 @@
         private System.Windows.Forms.ColumnHeader columnHigh;
         private System.Windows.Forms.ColumnHeader columnLow;
         private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.Button btnClose;
+        private System.Windows.Forms.Button btnGameStart;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnUserName;
+        private System.Windows.Forms.ColumnHeader columnUserMoney;
+        private System.Windows.Forms.ColumnHeader columnUserStock;
+        private System.Windows.Forms.ColumnHeader columnUserAsset;
+        private System.Windows.Forms.ColumnHeader columnReady;
     }
 }
 

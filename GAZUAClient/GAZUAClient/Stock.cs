@@ -13,9 +13,8 @@ namespace GAZUAServer
         private List<int> priceList;
         private List<int> volumeList;
         private int turn;
-        private int nTurns;
         private int startDate;
-        
+
         public string Name { get => name; set => name = value; }
         public int Turn { get => turn; set => turn = value; }
         public int StartDate { get => startDate; set => startDate = value; }
@@ -30,16 +29,14 @@ namespace GAZUAServer
             get { return volumeList.GetRange(StartDate, 50); }
             set { volumeList = value; }
         }
-        public int NTurns { get => nTurns; set => nTurns = value; }
 
-        public Stock(string name, List<int> priceList, List<int> volumeList, int start, int nTurns)
+        public Stock(string name, List<int> priceList, List<int> volumeList, int date)
         {
             Name = name;
             PriceList = priceList;
             VolumeList = volumeList;
             Turn = 0;
-            StartDate = start;
-            NTurns = nTurns;
+            StartDate = startDate;
         }
 
         public int GetPrice(int date)

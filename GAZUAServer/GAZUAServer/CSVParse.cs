@@ -17,7 +17,7 @@ namespace GAZUAServer
         public static int period;
         public static List<string> fileList;
        
-        public static List<Stock> ReadCSVFile()
+        public static List<Stock> ReadCSVFile(int start, int nTurns)
         {
             List<Stock> sList = new List<Stock>();
 
@@ -56,7 +56,7 @@ namespace GAZUAServer
                                 volume.Add(vol);
                             }
                         }
-                        sList.Add(new Stock(Path.GetFileNameWithoutExtension(strFile), price, volume, 300));
+                        sList.Add(new Stock(Path.GetFileNameWithoutExtension(strFile), price, volume, start, nTurns));
                     }
                 }
             }

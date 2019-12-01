@@ -9,26 +9,26 @@ using System.Threading.Tasks;
 
 namespace GAZUAServer
 {
-    class HandleClient
+    class handleClient
     {
-        TcpClient clientSocket;
-        int clientNo;
+        TcpClient clientSocket = null;
+        public Dictionary<TcpClient, UserData> clientList = null;
 
-        public void startClient(TcpClient ClientSocket, int clientNo)
+        public void startClient(TcpClient clientSocket, Dictionary<TcpClient, UserData> clientList)
         {
-            this.clientSocket = ClientSocket;
-            this.clientNo = clientNo;
+            this.clientSocket = clientSocket;
+            this.clientList = clientList;
 
             Thread t_hanlder = new Thread(doChat);
             t_hanlder.IsBackground = true;
             t_hanlder.Start();
         }
 
-        public delegate void MessageDisplayHandler(string text);
+        public delegate void MessageDisplayHandler(string message, string user_name);
         public event MessageDisplayHandler OnReceived;
 
-        public delegate void CalculateClientCounter();
-        public event CalculateClientCounter OnCalculated;
+        public delegate void DisconnectedHandler(TcpClient clientSocket);
+        public event DisconnectedHandler OnDisconnected;
 
         private void doChat()
         {
@@ -47,25 +47,9 @@ namespace GAZUAServer
                     bytes = stream.Read(buffer, 0, buffer.Length);
                     msg = Encoding.Unicode.GetString(buffer, 0, bytes);
                     msg = msg.Substring(0, msg.IndexOf("$"));
-                    msg = "Data Received : " + msg;
 
                     if (OnReceived != null)
-                        OnReceived(msg);
-
-                    msg = "Server to client(" + clientNo.ToString() + ") " + MessageCount.ToString();
-                    if (OnReceived != null)
-                        OnReceived(msg);
-
-                    byte[] sbuffer = Encoding.Unicode.GetBytes(msg);
-                    stream.Write(sbuffer, 0, sbuffer.Length);
-                    stream.Flush();
-
-                    msg = " >> " + msg;
-                    if (OnReceived != null)
-                    {
-                        OnReceived(msg);
-                        OnReceived("");
-                    }
+                        OnReceived(msg, clientList[clientSocket].UserNickName.ToString());
                 }
             }
             catch (SocketException se)
@@ -74,12 +58,12 @@ namespace GAZUAServer
 
                 if (clientSocket != null)
                 {
+                    if (OnDisconnected != null)
+                        OnDisconnected(clientSocket);
+
                     clientSocket.Close();
                     stream.Close();
                 }
-
-                if (OnCalculated != null)
-                    OnCalculated();
             }
             catch (Exception ex)
             {
@@ -87,12 +71,12 @@ namespace GAZUAServer
 
                 if (clientSocket != null)
                 {
+                    if (OnDisconnected != null)
+                        OnDisconnected(clientSocket);
+
                     clientSocket.Close();
                     stream.Close();
                 }
-
-                if (OnCalculated != null)
-                    OnCalculated();
             }
         }
     }
