@@ -25,8 +25,16 @@ namespace GAZUAClient
         private bool isConnected = false;
         public static int BUFFERSIZE = 65536;
 
+        private int gameState;
+
+        private int turn;
+        private List<Stock> stockList = null;
+
         internal UserData User { get => user; set => user = value; }
         public bool IsConnected { get => isConnected; set => isConnected = value; }
+        public int GameState { get => gameState; set => gameState = value; }
+        public int Turn { get => turn; set => turn = value; }
+        internal List<Stock> StockList { get => stockList; set => stockList = value; }
 
         public MainForm()
         {
@@ -106,6 +114,8 @@ namespace GAZUAClient
 
                 int bytes = stream.Read(buffer, 0, buffer.Length);
                 string message = Encoding.Unicode.GetString(buffer, 0, bytes);
+
+
 
                 /*
                 if (buffer.Length != 0)

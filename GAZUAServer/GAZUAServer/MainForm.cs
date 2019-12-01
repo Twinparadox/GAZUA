@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -111,6 +112,7 @@ namespace GAZUAServer
                         user_name = user_name.Substring(0, user_name.IndexOf("$"));
 
                         ClientList.Add(clientSocket, new UserData(user_name, StartMoney));
+                        SendInitMessage(clientSocket);
 
                         // send message all user
                         //SendMessageAll(user_name + " Joined ", "", false);
@@ -119,7 +121,6 @@ namespace GAZUAServer
                         h_client.OnReceived += new handleClient.MessageDisplayHandler(OnReceived);
                         h_client.OnDisconnected += new handleClient.DisconnectedHandler(h_client_OnDisconnected);
                         h_client.startClient(clientSocket, ClientList);
-                        SendInitMessage(clientSocket);
                     }
                     catch (SocketException se)
                     {
@@ -156,7 +157,7 @@ namespace GAZUAServer
             // 여기서 클라이언트의 닉네임을 수신받자.
             string displayMessage = "From client : " + user_name + " : " + message;
             UpdateServerState(displayMessage);
-            UpdateListViewUserState();
+            UpdateUserState();
             SendMessageAll(message, user_name, true);
         }
 
@@ -195,9 +196,15 @@ namespace GAZUAServer
             {
                 byte[] buffer = null;
 
-                string json = JsonConvert.SerializeObject(StockList[0]);
+                var json = JObject.Parse("{msgcode:1}");
+                var json1 = JsonConvert.SerializeObject(StockList);
+                var json1str = json1.ToString();
+                                                
+                json.Add("StockList", JArray.Parse(json1str));
 
-                buffer = Encoding.Unicode.GetBytes(json);
+                string strJson = json.ToString();
+
+                buffer = Encoding.Unicode.GetBytes(strJson);
             }
         }
 

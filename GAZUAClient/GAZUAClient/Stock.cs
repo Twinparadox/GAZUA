@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GAZUAServer
+namespace GAZUAClient
 {
     class Stock
     {
@@ -21,12 +21,12 @@ namespace GAZUAServer
 
         public List<int> PriceList
         {
-            get { return priceList.GetRange(StartDate, 50); }
+            get { return priceList.GetRange(StartDate, 30); }
             set { priceList = value; }
         }
         public List<int> VolumeList
         {
-            get { return volumeList.GetRange(StartDate, 50); }
+            get { return volumeList.GetRange(StartDate, 30); }
             set { volumeList = value; }
         }
 

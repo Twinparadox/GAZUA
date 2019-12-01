@@ -10,7 +10,6 @@ namespace GAZUAClient
     {
         private int asset;
         private int money;
-        private List<UserStock> stockList = null; 
 
         public int Asset { get => asset; set => asset = value; }
         public int Money { get => money; set => money = value; }
