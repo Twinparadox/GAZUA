@@ -35,17 +35,26 @@ namespace GAZUAClient
         private int gameState;
 
         private int turn;
+        private int startTurn;
+        private int selectedStock;
         private List<Stock> stockList = null;
+        private List<Trade> tradeList = null;
 
         internal UserData User { get => user; set => user = value; }
         public bool IsConnected { get => isConnected; set => isConnected = value; }
         public int GameState { get => gameState; set => gameState = value; }
         public int Turn { get => turn; set => turn = value; }
+        public int StartTurn { get => startTurn; set => startTurn = value; }
+        public int SelectedStock { get => selectedStock; set => selectedStock = value; }
         internal List<Stock> StockList { get => stockList; set => stockList = value; }
-
+        internal List<Trade> TradeList { get => tradeList; set => tradeList = value; }
+      
         public MainForm()
         {
             InitializeComponent();
+
+            TradeList = new List<Trade>();
+            
             mainSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
             _textAppender = new AppendTextDelegate(AppendText);
             _stockUpdater = new UpdateStockDelegate(UpdateStock);
@@ -205,13 +214,35 @@ namespace GAZUAClient
 
             int strType = Int32.Parse(msgType.ToString());
 
+            // Init
             if (strType == 1)
             {
+                btnConnect.Enabled = false;
                 foreach (var item in StockList)
                 {
                     item.StartDate = 0;
                 }
                 UpdateStock(lvStockState, StockList);
+            }
+
+            // Start
+            else if (strType == 2)
+            {
+                btnTurnOver.Enabled = true;
+                btnRanking.Enabled = true;
+                tcTrade.Enabled = true;
+            }
+
+            // Playing
+            else if (strType == 3)
+            {
+
+            }
+
+            // Ranking
+            else
+            {
+
             }
 
             // 텍스트박스에 추가해준다.
@@ -260,16 +291,64 @@ namespace GAZUAClient
         {
             btnTurnOver.Enabled = false;
             tcTrade.Enabled = false;
+            
+            // 서버가 대기중인지 확인한다.
+            if (!mainSock.IsBound)
+            {
+                MsgBoxHelper.Warn("서버가 실행되고 있지 않습니다!");
+                return;
+            }
+
+            // 보낼 텍스트
+            string tts = "HELLO";
+            if (string.IsNullOrEmpty(tts))
+            {
+                MsgBoxHelper.Warn("텍스트가 입력되지 않았습니다!");
+                return;
+            }
+
+            // 서버 ip 주소와 메세지를 담도록 만든다.
+            IPEndPoint ip = (IPEndPoint)mainSock.LocalEndPoint;
+            string addr = ip.Address.ToString();
+
+            // 문자열을 utf8 형식의 바이트로 변환한다.
+            byte[] bDts = Encoding.UTF8.GetBytes(addr + '\x01' + tts);
+
+            // 서버에 전송한다.
+            mainSock.Send(bDts);
+
+            TradeList.Clear();
         }
 
         private void btnMaxBuy_Click(object sender, EventArgs e)
         {
-
+            
         }
 
         private void btnMaxSell_Click(object sender, EventArgs e)
         {
 
+        }
+        private void btnBuy_Click(object sender, EventArgs e)
+        {
+            Trade t = new Trade();
+
+            t.StockIdx = SelectedStock;
+            t.NumStock = Int32.Parse(tbBuy.Text);
+            t.Flag = 1;
+
+            TradeList.Add(t);
+        }
+
+        private void btnSell_Click(object sender, EventArgs e)
+        {
+            Trade t = new Trade();
+
+            t.StockIdx = SelectedStock;
+            t.NumStock = Int32.Parse(tbSell.Text);
+            t.Flag = 2;
+
+            TradeList.Add(t);
         }
 
         public void UpdateData()
@@ -288,7 +367,11 @@ namespace GAZUAClient
 
                 try
                 {
-                    DrawLineChart(Int32.Parse(lvItem.SubItems[0].Text));
+                    int stockIdx = Int32.Parse(lvItem.SubItems[0].Text); 
+                    DrawLineChart(stockIdx);
+
+                    tbBuyPrice.Text = tbSellPrice.Text = stockList[stockIdx].PriceList.Last().ToString();
+                    SelectedStock = stockIdx;
                 }
                 catch
                 {
@@ -344,5 +427,6 @@ namespace GAZUAClient
             }
         }
         #endregion
+
     }
 }

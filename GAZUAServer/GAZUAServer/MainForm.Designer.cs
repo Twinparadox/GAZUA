@@ -41,6 +41,12 @@
             this.columnHigh = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnLow = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lvUserState = new System.Windows.Forms.ListView();
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnUserName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnUserMoney = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnUserStock = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnUserAsset = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnReady = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBoxStockData = new System.Windows.Forms.GroupBox();
             this.groupBoxUserData = new System.Windows.Forms.GroupBox();
             this.btnListen = new System.Windows.Forms.Button();
@@ -50,12 +56,10 @@
             this.rtbServerState = new System.Windows.Forms.RichTextBox();
             this.btnClose = new System.Windows.Forms.Button();
             this.btnGameStart = new System.Windows.Forms.Button();
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnUserName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnUserMoney = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnUserStock = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnUserAsset = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnReady = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnRank = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnID = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnAsset = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.chartStock)).BeginInit();
             this.groupBoxStockData.SuspendLayout();
             this.groupBoxUserData.SuspendLayout();
@@ -165,6 +169,40 @@
             this.lvUserState.UseCompatibleStateImageBehavior = false;
             this.lvUserState.View = System.Windows.Forms.View.Details;
             // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Width = 0;
+            // 
+            // columnUserName
+            // 
+            this.columnUserName.Text = "ID";
+            this.columnUserName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnUserName.Width = 100;
+            // 
+            // columnUserMoney
+            // 
+            this.columnUserMoney.Text = "보유자산(현금)";
+            this.columnUserMoney.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnUserMoney.Width = 150;
+            // 
+            // columnUserStock
+            // 
+            this.columnUserStock.Text = "보유자산(주식)";
+            this.columnUserStock.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnUserStock.Width = 150;
+            // 
+            // columnUserAsset
+            // 
+            this.columnUserAsset.Text = "보유자산(총액)";
+            this.columnUserAsset.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnUserAsset.Width = 150;
+            // 
+            // columnReady
+            // 
+            this.columnReady.Text = "상태";
+            this.columnReady.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnReady.Width = 45;
+            // 
             // groupBoxStockData
             // 
             this.groupBoxStockData.Controls.Add(this.lvStockState);
@@ -208,12 +246,18 @@
             // 
             // lvUserRanking
             // 
+            this.lvUserRanking.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader3,
+            this.columnRank,
+            this.columnID,
+            this.columnAsset});
             this.lvUserRanking.HideSelection = false;
             this.lvUserRanking.Location = new System.Drawing.Point(6, 20);
             this.lvUserRanking.Name = "lvUserRanking";
             this.lvUserRanking.Size = new System.Drawing.Size(292, 146);
             this.lvUserRanking.TabIndex = 0;
             this.lvUserRanking.UseCompatibleStateImageBehavior = false;
+            this.lvUserRanking.View = System.Windows.Forms.View.Details;
             // 
             // groupBoxServerInfo
             // 
@@ -254,39 +298,26 @@
             this.btnGameStart.UseVisualStyleBackColor = true;
             this.btnGameStart.Click += new System.EventHandler(this.btnGameStart_Click);
             // 
-            // columnHeader2
+            // columnHeader3
             // 
-            this.columnHeader2.Width = 0;
+            this.columnHeader3.Width = 0;
             // 
-            // columnUserName
+            // columnRank
             // 
-            this.columnUserName.Text = "ID";
-            this.columnUserName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnUserName.Width = 100;
+            this.columnRank.Text = "순위";
+            this.columnRank.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // columnUserMoney
+            // columnID
             // 
-            this.columnUserMoney.Text = "보유자산(현금)";
-            this.columnUserMoney.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnUserMoney.Width = 150;
+            this.columnID.Text = "ID";
+            this.columnID.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnID.Width = 100;
             // 
-            // columnUserStock
+            // columnAsset
             // 
-            this.columnUserStock.Text = "보유자산(주식)";
-            this.columnUserStock.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnUserStock.Width = 150;
-            // 
-            // columnUserAsset
-            // 
-            this.columnUserAsset.Text = "보유자산(총액)";
-            this.columnUserAsset.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnUserAsset.Width = 150;
-            // 
-            // columnReady
-            // 
-            this.columnReady.Text = "상태";
-            this.columnReady.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.columnReady.Width = 45;
+            this.columnAsset.Text = "자산(천)";
+            this.columnAsset.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnAsset.Width = 128;
             // 
             // MainForm
             // 
@@ -342,6 +373,10 @@
         private System.Windows.Forms.ColumnHeader columnUserStock;
         private System.Windows.Forms.ColumnHeader columnUserAsset;
         private System.Windows.Forms.ColumnHeader columnReady;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ColumnHeader columnRank;
+        private System.Windows.Forms.ColumnHeader columnID;
+        private System.Windows.Forms.ColumnHeader columnAsset;
     }
 }
 

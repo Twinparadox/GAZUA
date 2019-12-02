@@ -117,7 +117,7 @@ namespace GAZUAServer
             }
         }
 
-        void UpdateRanking(Control ctrl, List<Stock> list)
+        void UpdateRanking(Control ctrl, List<UserData> list)
         {
             if (ctrl.InvokeRequired)
             {
@@ -127,6 +127,17 @@ namespace GAZUAServer
             {
                 lvUserRanking.BeginUpdate();
                 lvUserRanking.Items.Clear();
+
+                int idx = 1;
+                foreach(var user in list)
+                {
+                    ListViewItem lvItem = new ListViewItem();
+                    lvItem.SubItems.Add(idx.ToString());
+                    lvItem.SubItems.Add(user.UserNickName);
+                    lvItem.SubItems.Add(((float)(user.UserAsset)/1000).ToString("N2"));
+
+                    lvUserRanking.Items.Add(lvItem);
+                }
                 lvUserRanking.EndUpdate();
             }
         }
@@ -552,7 +563,7 @@ namespace GAZUAServer
 
             userList.Sort((a, b) => a.UserAsset>b.UserAsset?1:-1);
 
-
+            UpdateRanking(lvUserRanking, userList);
         }
 
         #endregion

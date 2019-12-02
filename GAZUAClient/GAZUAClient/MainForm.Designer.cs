@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.lvMyState = new System.Windows.Forms.ListView();
             this.groupBoxMyData = new System.Windows.Forms.GroupBox();
             this.tbEarningRate = new System.Windows.Forms.TextBox();
@@ -50,10 +50,17 @@
             this.groupBoxStockData = new System.Windows.Forms.GroupBox();
             this.tcTrade = new System.Windows.Forms.TabControl();
             this.tabBuy = new System.Windows.Forms.TabPage();
-            this.btnMaxBuy = new System.Windows.Forms.Button();
+            this.tbBuy = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.tbBuyPrice = new System.Windows.Forms.TextBox();
+            this.btnMaxBuy = new System.Windows.Forms.Button();
+            this.lbPrice = new System.Windows.Forms.Label();
             this.btnBuy = new System.Windows.Forms.Button();
             this.tabSell = new System.Windows.Forms.TabPage();
+            this.tbSell = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.tbSellPrice = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.btnMaxSell = new System.Windows.Forms.Button();
             this.btnSell = new System.Windows.Forms.Button();
             this.chartStock = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -75,10 +82,9 @@
             // lvMyState
             // 
             this.lvMyState.HideSelection = false;
-            this.lvMyState.Location = new System.Drawing.Point(5, 74);
-            this.lvMyState.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.lvMyState.Location = new System.Drawing.Point(4, 59);
             this.lvMyState.Name = "lvMyState";
-            this.lvMyState.Size = new System.Drawing.Size(685, 133);
+            this.lvMyState.Size = new System.Drawing.Size(600, 107);
             this.lvMyState.TabIndex = 3;
             this.lvMyState.UseCompatibleStateImageBehavior = false;
             // 
@@ -91,11 +97,9 @@
             this.groupBoxMyData.Controls.Add(this.tbMoney);
             this.groupBoxMyData.Controls.Add(this.label1);
             this.groupBoxMyData.Controls.Add(this.lvMyState);
-            this.groupBoxMyData.Location = new System.Drawing.Point(14, 621);
-            this.groupBoxMyData.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.groupBoxMyData.Location = new System.Drawing.Point(12, 497);
             this.groupBoxMyData.Name = "groupBoxMyData";
-            this.groupBoxMyData.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBoxMyData.Size = new System.Drawing.Size(697, 215);
+            this.groupBoxMyData.Size = new System.Drawing.Size(610, 172);
             this.groupBoxMyData.TabIndex = 9;
             this.groupBoxMyData.TabStop = false;
             this.groupBoxMyData.Text = "내 정보";
@@ -103,60 +107,57 @@
             // tbEarningRate
             // 
             this.tbEarningRate.Font = new System.Drawing.Font("굴림", 11F);
-            this.tbEarningRate.Location = new System.Drawing.Point(576, 36);
-            this.tbEarningRate.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tbEarningRate.Location = new System.Drawing.Point(504, 29);
             this.tbEarningRate.Name = "tbEarningRate";
             this.tbEarningRate.ReadOnly = true;
-            this.tbEarningRate.Size = new System.Drawing.Size(114, 29);
+            this.tbEarningRate.Size = new System.Drawing.Size(100, 24);
             this.tbEarningRate.TabIndex = 9;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("굴림", 11F);
-            this.label4.Location = new System.Drawing.Point(510, 40);
+            this.label4.Location = new System.Drawing.Point(446, 32);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(66, 19);
+            this.label4.Size = new System.Drawing.Size(52, 15);
             this.label4.TabIndex = 8;
             this.label4.Text = "수익률";
             // 
             // tbAssets
             // 
             this.tbAssets.Font = new System.Drawing.Font("굴림", 11F);
-            this.tbAssets.Location = new System.Drawing.Point(330, 36);
-            this.tbAssets.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tbAssets.Location = new System.Drawing.Point(289, 29);
             this.tbAssets.Name = "tbAssets";
             this.tbAssets.ReadOnly = true;
-            this.tbAssets.Size = new System.Drawing.Size(114, 29);
+            this.tbAssets.Size = new System.Drawing.Size(100, 24);
             this.tbAssets.TabIndex = 7;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("굴림", 11F);
-            this.label3.Location = new System.Drawing.Point(247, 40);
+            this.label3.Location = new System.Drawing.Point(216, 32);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(85, 19);
+            this.label3.Size = new System.Drawing.Size(67, 15);
             this.label3.TabIndex = 6;
             this.label3.Text = "보유자산";
             // 
             // tbMoney
             // 
             this.tbMoney.Font = new System.Drawing.Font("굴림", 11F);
-            this.tbMoney.Location = new System.Drawing.Point(90, 36);
-            this.tbMoney.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tbMoney.Location = new System.Drawing.Point(79, 29);
             this.tbMoney.Name = "tbMoney";
             this.tbMoney.ReadOnly = true;
-            this.tbMoney.Size = new System.Drawing.Size(114, 29);
+            this.tbMoney.Size = new System.Drawing.Size(100, 24);
             this.tbMoney.TabIndex = 5;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("굴림", 11F);
-            this.label1.Location = new System.Drawing.Point(7, 40);
+            this.label1.Location = new System.Drawing.Point(6, 32);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(85, 19);
+            this.label1.Size = new System.Drawing.Size(67, 15);
             this.label1.TabIndex = 4;
             this.label1.Text = "보유현금";
             // 
@@ -173,11 +174,10 @@
             this.lvStockState.FullRowSelect = true;
             this.lvStockState.GridLines = true;
             this.lvStockState.HideSelection = false;
-            this.lvStockState.Location = new System.Drawing.Point(7, 415);
-            this.lvStockState.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.lvStockState.Location = new System.Drawing.Point(6, 332);
             this.lvStockState.Name = "lvStockState";
             this.lvStockState.ShowItemToolTips = true;
-            this.lvStockState.Size = new System.Drawing.Size(685, 175);
+            this.lvStockState.Size = new System.Drawing.Size(600, 141);
             this.lvStockState.TabIndex = 1;
             this.lvStockState.UseCompatibleStateImageBehavior = false;
             this.lvStockState.View = System.Windows.Forms.View.Details;
@@ -229,11 +229,9 @@
             this.groupBoxStockData.Controls.Add(this.tcTrade);
             this.groupBoxStockData.Controls.Add(this.chartStock);
             this.groupBoxStockData.Controls.Add(this.lvStockState);
-            this.groupBoxStockData.Location = new System.Drawing.Point(18, 15);
-            this.groupBoxStockData.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.groupBoxStockData.Location = new System.Drawing.Point(16, 12);
             this.groupBoxStockData.Name = "groupBoxStockData";
-            this.groupBoxStockData.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBoxStockData.Size = new System.Drawing.Size(1047, 599);
+            this.groupBoxStockData.Size = new System.Drawing.Size(916, 479);
             this.groupBoxStockData.TabIndex = 11;
             this.groupBoxStockData.TabStop = false;
             this.groupBoxStockData.Text = "현재 주가 정보";
@@ -242,76 +240,135 @@
             // 
             this.tcTrade.Controls.Add(this.tabBuy);
             this.tcTrade.Controls.Add(this.tabSell);
-            this.tcTrade.Location = new System.Drawing.Point(699, 415);
-            this.tcTrade.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tcTrade.Location = new System.Drawing.Point(612, 332);
             this.tcTrade.Name = "tcTrade";
             this.tcTrade.SelectedIndex = 0;
-            this.tcTrade.Size = new System.Drawing.Size(341, 176);
+            this.tcTrade.Size = new System.Drawing.Size(298, 141);
             this.tcTrade.TabIndex = 3;
             // 
             // tabBuy
             // 
             this.tabBuy.BackColor = System.Drawing.SystemColors.Control;
-            this.tabBuy.Controls.Add(this.btnMaxBuy);
+            this.tabBuy.Controls.Add(this.tbBuy);
             this.tabBuy.Controls.Add(this.label2);
+            this.tabBuy.Controls.Add(this.tbBuyPrice);
+            this.tabBuy.Controls.Add(this.btnMaxBuy);
+            this.tabBuy.Controls.Add(this.lbPrice);
             this.tabBuy.Controls.Add(this.btnBuy);
-            this.tabBuy.Location = new System.Drawing.Point(4, 25);
-            this.tabBuy.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tabBuy.Location = new System.Drawing.Point(4, 22);
             this.tabBuy.Name = "tabBuy";
-            this.tabBuy.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.tabBuy.Size = new System.Drawing.Size(333, 147);
+            this.tabBuy.Padding = new System.Windows.Forms.Padding(3);
+            this.tabBuy.Size = new System.Drawing.Size(290, 115);
             this.tabBuy.TabIndex = 0;
             this.tabBuy.Text = "매수";
             // 
+            // tbBuy
+            // 
+            this.tbBuy.Location = new System.Drawing.Point(95, 35);
+            this.tbBuy.Name = "tbBuy";
+            this.tbBuy.Size = new System.Drawing.Size(189, 21);
+            this.tbBuy.TabIndex = 7;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 44);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(63, 12);
+            this.label2.TabIndex = 6;
+            this.label2.Text = "매수량(주)";
+            // 
+            // tbBuyPrice
+            // 
+            this.tbBuyPrice.Location = new System.Drawing.Point(94, 6);
+            this.tbBuyPrice.Name = "tbBuyPrice";
+            this.tbBuyPrice.ReadOnly = true;
+            this.tbBuyPrice.Size = new System.Drawing.Size(190, 21);
+            this.tbBuyPrice.TabIndex = 5;
+            // 
             // btnMaxBuy
             // 
-            this.btnMaxBuy.Location = new System.Drawing.Point(9, 91);
-            this.btnMaxBuy.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnMaxBuy.Location = new System.Drawing.Point(3, 77);
             this.btnMaxBuy.Name = "btnMaxBuy";
-            this.btnMaxBuy.Size = new System.Drawing.Size(137, 44);
+            this.btnMaxBuy.Size = new System.Drawing.Size(120, 35);
             this.btnMaxBuy.TabIndex = 4;
             this.btnMaxBuy.Text = "최대수량";
             this.btnMaxBuy.UseVisualStyleBackColor = true;
             this.btnMaxBuy.Click += new System.EventHandler(this.btnMaxBuy_Click);
             // 
-            // label2
+            // lbPrice
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(7, 15);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(45, 15);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "label2";
+            this.lbPrice.AutoSize = true;
+            this.lbPrice.Location = new System.Drawing.Point(6, 9);
+            this.lbPrice.Name = "lbPrice";
+            this.lbPrice.Size = new System.Drawing.Size(57, 12);
+            this.lbPrice.TabIndex = 3;
+            this.lbPrice.Text = "현재 주가";
             // 
             // btnBuy
             // 
-            this.btnBuy.Location = new System.Drawing.Point(189, 91);
-            this.btnBuy.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnBuy.Location = new System.Drawing.Point(167, 77);
             this.btnBuy.Name = "btnBuy";
-            this.btnBuy.Size = new System.Drawing.Size(137, 44);
+            this.btnBuy.Size = new System.Drawing.Size(120, 35);
             this.btnBuy.TabIndex = 0;
             this.btnBuy.Text = "매수";
             this.btnBuy.UseVisualStyleBackColor = true;
+            this.btnBuy.Click += new System.EventHandler(this.btnBuy_Click);
             // 
             // tabSell
             // 
             this.tabSell.BackColor = System.Drawing.SystemColors.Control;
+            this.tabSell.Controls.Add(this.tbSell);
+            this.tabSell.Controls.Add(this.label5);
+            this.tabSell.Controls.Add(this.tbSellPrice);
+            this.tabSell.Controls.Add(this.label6);
             this.tabSell.Controls.Add(this.btnMaxSell);
             this.tabSell.Controls.Add(this.btnSell);
-            this.tabSell.Location = new System.Drawing.Point(4, 25);
-            this.tabSell.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tabSell.Location = new System.Drawing.Point(4, 22);
             this.tabSell.Name = "tabSell";
-            this.tabSell.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.tabSell.Size = new System.Drawing.Size(333, 147);
+            this.tabSell.Padding = new System.Windows.Forms.Padding(3);
+            this.tabSell.Size = new System.Drawing.Size(290, 115);
             this.tabSell.TabIndex = 1;
             this.tabSell.Text = "매도";
             // 
+            // tbSell
+            // 
+            this.tbSell.Location = new System.Drawing.Point(94, 35);
+            this.tbSell.Name = "tbSell";
+            this.tbSell.Size = new System.Drawing.Size(189, 21);
+            this.tbSell.TabIndex = 11;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 44);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(63, 12);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "매수량(주)";
+            // 
+            // tbSellPrice
+            // 
+            this.tbSellPrice.Location = new System.Drawing.Point(94, 6);
+            this.tbSellPrice.Name = "tbSellPrice";
+            this.tbSellPrice.ReadOnly = true;
+            this.tbSellPrice.Size = new System.Drawing.Size(190, 21);
+            this.tbSellPrice.TabIndex = 9;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 9);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(57, 12);
+            this.label6.TabIndex = 8;
+            this.label6.Text = "현재 주가";
+            // 
             // btnMaxSell
             // 
-            this.btnMaxSell.Location = new System.Drawing.Point(7, 91);
-            this.btnMaxSell.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnMaxSell.Location = new System.Drawing.Point(3, 77);
             this.btnMaxSell.Name = "btnMaxSell";
-            this.btnMaxSell.Size = new System.Drawing.Size(137, 44);
+            this.btnMaxSell.Size = new System.Drawing.Size(120, 35);
             this.btnMaxSell.TabIndex = 5;
             this.btnMaxSell.Text = "최대수량";
             this.btnMaxSell.UseVisualStyleBackColor = true;
@@ -319,33 +376,32 @@
             // 
             // btnSell
             // 
-            this.btnSell.Location = new System.Drawing.Point(189, 91);
-            this.btnSell.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnSell.Location = new System.Drawing.Point(167, 77);
             this.btnSell.Name = "btnSell";
-            this.btnSell.Size = new System.Drawing.Size(137, 44);
+            this.btnSell.Size = new System.Drawing.Size(120, 35);
             this.btnSell.TabIndex = 1;
             this.btnSell.Text = "매도";
             this.btnSell.UseVisualStyleBackColor = true;
+            this.btnSell.Click += new System.EventHandler(this.btnSell_Click);
             // 
             // chartStock
             // 
-            chartArea1.AxisX.MajorGrid.LineWidth = 0;
-            chartArea1.AxisY.MajorGrid.LineWidth = 0;
-            chartArea1.Name = "ChartArea1";
-            this.chartStock.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.chartStock.Legends.Add(legend1);
-            this.chartStock.Location = new System.Drawing.Point(7, 25);
-            this.chartStock.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            chartArea2.AxisX.MajorGrid.LineWidth = 0;
+            chartArea2.AxisY.MajorGrid.LineWidth = 0;
+            chartArea2.Name = "ChartArea1";
+            this.chartStock.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            this.chartStock.Legends.Add(legend2);
+            this.chartStock.Location = new System.Drawing.Point(6, 20);
             this.chartStock.Name = "chartStock";
             this.chartStock.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            series1.YValuesPerPoint = 2;
-            this.chartStock.Series.Add(series1);
-            this.chartStock.Size = new System.Drawing.Size(1033, 382);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            series2.YValuesPerPoint = 2;
+            this.chartStock.Series.Add(series2);
+            this.chartStock.Size = new System.Drawing.Size(904, 306);
             this.chartStock.TabIndex = 2;
             this.chartStock.Text = "chart1";
             // 
@@ -360,10 +416,9 @@
             // 
             // btnTurnOver
             // 
-            this.btnTurnOver.Location = new System.Drawing.Point(928, 785);
-            this.btnTurnOver.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnTurnOver.Location = new System.Drawing.Point(812, 628);
             this.btnTurnOver.Name = "btnTurnOver";
-            this.btnTurnOver.Size = new System.Drawing.Size(137, 44);
+            this.btnTurnOver.Size = new System.Drawing.Size(120, 35);
             this.btnTurnOver.TabIndex = 12;
             this.btnTurnOver.Text = "턴 종료";
             this.btnTurnOver.UseVisualStyleBackColor = true;
@@ -371,20 +426,18 @@
             // 
             // btnRanking
             // 
-            this.btnRanking.Location = new System.Drawing.Point(718, 785);
-            this.btnRanking.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnRanking.Location = new System.Drawing.Point(628, 628);
             this.btnRanking.Name = "btnRanking";
-            this.btnRanking.Size = new System.Drawing.Size(137, 44);
+            this.btnRanking.Size = new System.Drawing.Size(120, 35);
             this.btnRanking.TabIndex = 13;
             this.btnRanking.Text = "랭킹";
             this.btnRanking.UseVisualStyleBackColor = true;
             // 
             // btnConnect
             // 
-            this.btnConnect.Location = new System.Drawing.Point(928, 622);
-            this.btnConnect.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnConnect.Location = new System.Drawing.Point(812, 498);
             this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(137, 44);
+            this.btnConnect.Size = new System.Drawing.Size(120, 35);
             this.btnConnect.TabIndex = 14;
             this.btnConnect.Text = "서버 접속";
             this.btnConnect.UseVisualStyleBackColor = true;
@@ -393,10 +446,9 @@
             // tbPort
             // 
             this.tbPort.Font = new System.Drawing.Font("굴림", 18F);
-            this.tbPort.Location = new System.Drawing.Point(718, 622);
-            this.tbPort.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tbPort.Location = new System.Drawing.Point(628, 498);
             this.tbPort.Name = "tbPort";
-            this.tbPort.Size = new System.Drawing.Size(185, 42);
+            this.tbPort.Size = new System.Drawing.Size(162, 35);
             this.tbPort.TabIndex = 15;
             this.tbPort.Text = "5000";
             this.tbPort.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbPort_KeyPress);
@@ -406,24 +458,23 @@
             this.toolStripStatusLabel.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.toolStripStatusLabel.Location = new System.Drawing.Point(0, 0);
             this.toolStripStatusLabel.Name = "toolStripStatusLabel";
-            this.toolStripStatusLabel.Size = new System.Drawing.Size(1079, 25);
+            this.toolStripStatusLabel.Size = new System.Drawing.Size(944, 25);
             this.toolStripStatusLabel.TabIndex = 16;
             // 
             // tbNickName
             // 
             this.tbNickName.Font = new System.Drawing.Font("굴림", 18F);
-            this.tbNickName.Location = new System.Drawing.Point(718, 674);
-            this.tbNickName.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.tbNickName.Location = new System.Drawing.Point(628, 539);
             this.tbNickName.Name = "tbNickName";
-            this.tbNickName.Size = new System.Drawing.Size(185, 42);
+            this.tbNickName.Size = new System.Drawing.Size(162, 35);
             this.tbNickName.TabIndex = 17;
             this.tbNickName.Text = "5000";
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1079, 851);
+            this.ClientSize = new System.Drawing.Size(944, 681);
             this.Controls.Add(this.tbNickName);
             this.Controls.Add(this.toolStripStatusLabel);
             this.Controls.Add(this.tbPort);
@@ -433,7 +484,6 @@
             this.Controls.Add(this.groupBoxStockData);
             this.Controls.Add(this.groupBoxMyData);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "GAZUA - Client";
@@ -446,6 +496,7 @@
             this.tabBuy.ResumeLayout(false);
             this.tabBuy.PerformLayout();
             this.tabSell.ResumeLayout(false);
+            this.tabSell.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.chartStock)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -472,7 +523,7 @@
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Button btnSell;
         private System.Windows.Forms.Button btnTurnOver;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lbPrice;
         private System.Windows.Forms.TextBox tbMoney;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tbAssets;
@@ -486,6 +537,13 @@
         private System.Windows.Forms.TextBox tbPort;
         private System.Windows.Forms.ToolStrip toolStripStatusLabel;
         private System.Windows.Forms.TextBox tbNickName;
+        private System.Windows.Forms.TextBox tbBuy;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox tbBuyPrice;
+        private System.Windows.Forms.TextBox tbSell;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox tbSellPrice;
+        private System.Windows.Forms.Label label6;
     }
 }
 
