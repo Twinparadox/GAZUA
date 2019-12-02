@@ -19,44 +19,111 @@ namespace GAZUAServer
 {
     public partial class MainForm : Form
     {
-        TcpListener server = null;
-        TcpClient clientSocket = null;
-        Thread t = null;
+        delegate void AppendTextDelegate(Control ctrl, string s);
+        AppendTextDelegate _textAppender;
+        delegate void UpdateUserDelegate(Control ctrl, Dictionary<Socket, UserData> list);
+        UpdateUserDelegate _userUpdater;
 
-        private Dictionary<TcpClient, UserData> clientList = new Dictionary<TcpClient, UserData>();
+        Socket mainSock;
+        IPAddress thisAddress;
+
+        private Dictionary<Socket, UserData> clientList;
 
         private static int counter;
         public static int startTurn = 200;
-        public static int nTurns = 50;
+        public static int nTurns = 10;
         public static int PortNum = 5000;
-
+        public static int BUFFERSIZE = 65536;
         public static int StartMoney = 10000000;
 
         private int gameState;
 
-        private int turn;
+        private int restTurn;
         private List<Stock> stockList = null;
 
         public int Counter { get => counter; set => counter = value; }
         public int GameState { get => gameState; set => gameState = value; }
-        public int Turn { get => turn; set => turn = value; }
+        public int RestTurn { get => restTurn; set => restTurn = value; }
         internal List<Stock> StockList { get => stockList; set => stockList = value; }
-        internal Dictionary<TcpClient, UserData> ClientList { get => clientList; set => clientList = value; }
+        internal Dictionary<Socket, UserData> ClientList { get => clientList; set => clientList = value; }
 
         public MainForm()
         {
             InitializeComponent();
+            mainSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
+            _textAppender = new AppendTextDelegate(AppendText);
+            _userUpdater = new UpdateUserDelegate(UpdateUser);
+
+            ClientList = new Dictionary<Socket, UserData>();
+        }
+
+        void AppendText(Control ctrl, string s)
+        {
+            if (ctrl.InvokeRequired)
+            {
+                ctrl.Invoke(_textAppender, ctrl, s);
+            }
+            else
+            {
+                string source = ctrl.Text;
+                ctrl.Text = source + Environment.NewLine + s;
+            }
+        }
+
+        void UpdateUser(Control ctrl, Dictionary<Socket, UserData> list)
+        {
+            if (ctrl.InvokeRequired)
+            {
+                ctrl.Invoke(_userUpdater, ctrl, list);
+            }
+            else
+            {
+                lvUserState.BeginUpdate();
+                lvUserState.Items.Clear();
+
+                int idx = 0;
+                foreach (var item in list)
+                {
+                    UserData user = item.Value;
+
+                    ListViewItem lvItem = new ListViewItem(idx.ToString());
+                    lvItem.SubItems.Add(user.UserNickName);
+                    lvItem.SubItems.Add(user.UserMoney.ToString());
+                    lvItem.SubItems.Add(user.UserStocks.ToString());
+                    lvItem.SubItems.Add(user.UserAsset.ToString());
+
+                    if (user.IsReady == 1)
+                    {
+                        lvItem.SubItems.Add("Wait");
+                    }
+                    else if (user.IsReady == 2)
+                    {
+                        lvItem.SubItems.Add("On");
+                    }
+                    else
+                    {
+                        lvItem.SubItems.Add("Off");
+                    }
+
+                    lvUserState.Items.Add(lvItem);
+                    idx++;
+                }
+                lvUserState.EndUpdate();
+            }
         }
 
         #region MainForm
         private void MainForm_Load(object sender, EventArgs e)
         {
-            Turn = 0;
+            RestTurn = 0;
 
             StockList = CSVParse.ReadCSVFile(startTurn, nTurns);
             DrawLineChart(0);
 
             UpdateListViewStockState();
+
+            IPHostEntry he = Dns.GetHostEntry(Dns.GetHostName());
+            thisAddress = IPAddress.Loopback;
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -72,22 +139,132 @@ namespace GAZUAServer
         private void btnListen_Click(object sender, EventArgs e)
         {
             // socket start
-            t = new Thread(InitSocket);
-            t.IsBackground = true;
-            t.Start();
+            // 서버에서 클라이언트의 연결 요청을 대기하기 위해
+            // 소켓을 열어둔다.
+            IPEndPoint serverEP = new IPEndPoint(thisAddress, PortNum);
+            mainSock.Bind(serverEP);
+            mainSock.Listen(10);
+
+            // 비동기적으로 클라이언트의 연결 요청을 받는다.
+            mainSock.BeginAccept(AcceptCallback, null);
+
+            AppendText(rtbServerState, string.Format("서버가 열렸습니다."));
+
             btnListen.Enabled = false;
-            btnGameStart.Enabled = true;
             btnClose.Enabled = true;
+            btnGameStart.Enabled = true;
+        }
+
+        void AcceptCallback(IAsyncResult ar)
+        {
+            // 클라이언트의 연결 요청을 수락한다.
+            Socket client = mainSock.EndAccept(ar);
+
+            // 또 다른 클라이언트의 연결을 대기한다.
+            mainSock.BeginAccept(AcceptCallback, null);
+
+            AsyncObject obj = new AsyncObject(BUFFERSIZE);
+            obj.WorkingSocket = client;
+
+            // 연결된 클라이언트 리스트에 추가해준다.
+            ClientList.Add(client, new UserData("5000", StartMoney));
+
+            // 텍스트박스에 클라이언트가 연결되었다고 써준다.
+            AppendText(rtbServerState, string.Format("클라이언트 (@ {0})가 연결되었습니다.", client.RemoteEndPoint));
+
+            SendInitData();
+
+            // 클라이언트의 데이터를 받는다.
+            client.BeginReceive(obj.Buffer, 0, BUFFERSIZE, 0, DataReceived, obj);
+        }
+
+        void DataReceived(IAsyncResult ar)
+        {
+            // BeginReceive에서 추가적으로 넘어온 데이터를 AsyncObject 형식으로 변환한다.
+            AsyncObject obj = (AsyncObject)ar.AsyncState;
+
+            // 데이터 수신을 끝낸다.
+            int received = obj.WorkingSocket.EndReceive(ar);
+
+            // 받은 데이터가 없으면(연결끊어짐) 끝낸다.
+            if (received <= 0)
+            {
+                obj.WorkingSocket.Close();
+                return;
+            }
+
+            // 텍스트로 변환한다.
+            string message = Encoding.UTF8.GetString(obj.Buffer);
+
+            var json = JObject.Parse(message);
+
+            var msgType = json["msgcode"];
+
+            int strType = Int32.Parse(msgType.ToString());
+
+            if (strType == 1)
+            {
+                string msgData = json["NickName"].ToString();
+                ClientList[obj.WorkingSocket].UserNickName = msgData;
+                UpdateUser(lvUserState, ClientList);
+            }
+
+            // 텍스트박스에 추가해준다.
+            // 비동기식으로 작업하기 때문에 폼의 UI 스레드에서 작업을 해줘야 한다.
+            // 따라서 대리자를 통해 처리한다.
+
+            // 데이터를 받은 후엔 다시 버퍼를 비워주고 같은 방법으로 수신을 대기한다.
+            obj.ClearBuffer();
+
+            // 수신 대기
+            obj.WorkingSocket.BeginReceive(obj.Buffer, 0, BUFFERSIZE, 0, DataReceived, obj);
+        }
+
+        void SendInitData()
+        {
+            // 서버가 대기중인지 확인한다.
+            if (!mainSock.IsBound)
+            {
+                MsgBoxHelper.Warn("서버가 실행되고 있지 않습니다!");
+                return;
+            }
+
+            byte[] buffer = null;
+
+            var json = JObject.Parse("{msgcode:1}");
+            var json1 = JsonConvert.SerializeObject(StockList);
+            var json1str = json1.ToString();
+
+            json.Add("StockList", JArray.Parse(json1str));
+
+            string strJson = json.ToString();
+
+            buffer = Encoding.UTF8.GetBytes(strJson);
+
+            // 연결된 모든 클라이언트에게 전송한다.
+            foreach (var client in ClientList)
+            {
+                Socket socket = client.Key;
+                try { socket.Send(buffer); }
+                catch
+                {
+                    // 오류 발생하면 전송 취소하고 리스트에서 삭제한다.
+                    try { socket.Dispose(); } catch { }
+                }
+            }
+            // 전송 완료 후 텍스트박스에 추가하고, 원래의 내용은 지운다.
+            AppendText(rtbServerState, string.Format("초기 데이터 전송 완료"));
+
         }
 
         private void btnClose_Click(object sender, EventArgs e)
         {
-            t.Abort();
             btnClose.Enabled = false;
             btnGameStart.Enabled = false;
             btnListen.Enabled = true;
         }
 
+        /*
         private void InitSocket()
         {
             try
@@ -106,14 +283,12 @@ namespace GAZUAServer
                         UpdateServerState(">> Accept connection from client");
 
                         NetworkStream stream = clientSocket.GetStream();
-                        byte[] buffer = new byte[1024];
+                        byte[] buffer = new byte[BUFFERSIZE];
                         int bytes = stream.Read(buffer, 0, buffer.Length);
                         string user_name = Encoding.Unicode.GetString(buffer, 0, bytes);
                         user_name = user_name.Substring(0, user_name.IndexOf("$"));
 
                         ClientList.Add(clientSocket, new UserData(user_name, StartMoney));
-                        SendInitMessage(clientSocket);
-
                         // send message all user
                         //SendMessageAll(user_name + " Joined ", "", false);
 
@@ -133,58 +308,13 @@ namespace GAZUAServer
                         break;
                     }
                 }
-
-                if (clientSocket != null)
-                {
-                    clientSocket.Close();
-                }
-                server.Stop();
             }
             catch (Exception ex)
             {
                 Trace.WriteLine(string.Format("InitSocket - Exception : {0}", ex.Message));
             }
         }
-
-        void h_client_OnDisconnected(TcpClient clientSocket)
-        {
-            if (ClientList.ContainsKey(clientSocket))
-                ClientList.Remove(clientSocket);
-        }
-
-        private void OnReceived(string message, string user_name)
-        {
-            // 여기서 클라이언트의 닉네임을 수신받자.
-            string displayMessage = "From client : " + user_name + " : " + message;
-            UpdateServerState(displayMessage);
-            UpdateUserState();
-            SendMessageAll(message, user_name, true);
-        }
-
-        public void SendMessageAll(string message, string user_name, bool flag)
-        {
-            // 여기서 주식 데이터와 클라이언트 개인의 정보를 뿌려주자.
-            foreach (var pair in ClientList)
-            {
-                Trace.WriteLine(string.Format("tcpclient : {0} user_name : {1}", pair.Key, pair.Value.UserNickName));
-
-                TcpClient client = pair.Key as TcpClient;
-                NetworkStream stream = client.GetStream();
-                byte[] buffer = null;
-
-                if (flag)
-                {
-                    buffer = Encoding.Unicode.GetBytes(user_name + " says : " + message);
-                }
-                else
-                {
-                    buffer = Encoding.Unicode.GetBytes(message);
-                }
-
-                stream.Write(buffer, 0, buffer.Length);
-                stream.Flush();
-            }
-        }
+        */
 
         public void SendInitMessage(TcpClient client)
         {
@@ -205,91 +335,17 @@ namespace GAZUAServer
                 string strJson = json.ToString();
 
                 buffer = Encoding.Unicode.GetBytes(strJson);
-            }
-        }
 
-        public void UpdateServerState(string text)
-        {
-            if (rtbServerState.InvokeRequired)
-            {
-                rtbServerState.BeginInvoke(new MethodInvoker(delegate
-                {
-                    rtbServerState.AppendText(text + Environment.NewLine);
-                }));
-            }
-            else
-            {
-                rtbServerState.AppendText(text + Environment.NewLine);
+                stream.Write(buffer, 0, buffer.Length);
+                stream.Flush();
             }
         }
         #endregion
 
         #region ListViewUserState
-        public void UpdateUserState()
-        {
-            if(lvUserState.InvokeRequired)
-            {
-                lvUserState.BeginInvoke(new MethodInvoker(delegate
-                {
-                    UpdateListViewUserState();
-                }));
-            }
-            else
-            {
-                UpdateListViewUserState();
-            }
-        }
-        public void UpdateListViewUserState()
-        {
-            lvUserState.BeginUpdate();
-            lvUserState.Items.Clear();
-
-            int idx = 0;
-            foreach (var client in clientList)
-            {
-                UserData user = client.Value;
-
-                ListViewItem lvItem = new ListViewItem(idx.ToString());
-                lvItem.SubItems.Add(user.UserNickName);
-                lvItem.SubItems.Add(user.UserMoney.ToString());
-                lvItem.SubItems.Add(user.UserStocks.ToString());
-                lvItem.SubItems.Add(user.UserAsset.ToString());
-                
-                if(user.IsReady == 1)
-                {
-                    lvItem.SubItems.Add("Wait");
-                }
-                else if(user.IsReady == 2)
-                {
-                    lvItem.SubItems.Add("On");
-                }
-                else
-                {
-                    lvItem.SubItems.Add("Off");
-                }
-
-                lvUserState.Items.Add(lvItem);
-                idx++;
-            }
-            lvUserState.EndUpdate();
-        }
         #endregion
 
         #region ListViewStockState
-        public void UpdateStockState()
-        {
-            if (lvStockState.InvokeRequired)
-            {
-                lvStockState.BeginInvoke(new MethodInvoker(delegate
-                {
-                    UpdateListViewStockState();
-                }));
-            }
-            else
-            {
-                UpdateListViewStockState();
-            }
-        }
         public void UpdateListViewStockState()
         {
             lvStockState.BeginUpdate();
@@ -359,7 +415,7 @@ namespace GAZUAServer
 
             chartStock.Series[0].Points.Clear();
             chartStock.ChartAreas[0].AxisY.Minimum = minChart;
-            chartStock.ChartAreas[0].AxisX.Minimum = Turn;
+            chartStock.ChartAreas[0].AxisX.Minimum = RestTurn;
 
             for (int i = 0; i < priceList.Capacity; i++)
             {
@@ -403,7 +459,61 @@ namespace GAZUAServer
         #region Game Start
         private void btnGameStart_Click(object sender, EventArgs e)
         {
-            UpdateListViewUserState();
+            RestTurn = nTurns;
+            SendStart();
+            btnGameStart.Enabled = false;
+        }
+
+        void SendStart()
+        {
+            // 서버가 대기중인지 확인한다.
+            if (!mainSock.IsBound)
+            {
+                MsgBoxHelper.Warn("서버가 실행되고 있지 않습니다!");
+                return;
+            }
+
+            // 보낼 텍스트
+            byte[] buffer = null;
+
+            var json = JObject.Parse("{msgcode:2, restTurn:"+RestTurn.ToString()+"}");
+            var json1 = JsonConvert.SerializeObject(StockList);
+            var json1str = json1.ToString();
+
+            json.Add("StockList", JArray.Parse(json1str));
+
+            string strJson = json.ToString();
+
+            buffer = Encoding.UTF8.GetBytes(strJson);
+
+            // 연결된 모든 클라이언트에게 전송한다.
+            foreach (var client in ClientList)
+            {
+                Socket socket = client.Key;
+                try
+                {
+                    socket.Send(buffer);
+                    client.Value.IsReady = 1;
+                }
+                catch
+                {
+                    // 오류 발생하면 전송 취소하고 리스트에서 삭제한다.
+                    try
+                    {
+                        socket.Dispose();
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+            // 전송 완료 후 텍스트박스에 추가하고, 원래의 내용은 지운다.
+            AppendText(rtbServerState, string.Format("게임 시작, 남은 턴 : "+RestTurn.ToString()));
+            UpdateUser(lvUserState, ClientList);
+        }
+
+        void SendTurnData()
+        {
 
         }
         #endregion

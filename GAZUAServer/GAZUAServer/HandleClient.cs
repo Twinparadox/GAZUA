@@ -13,6 +13,7 @@ namespace GAZUAServer
     {
         TcpClient clientSocket = null;
         public Dictionary<TcpClient, UserData> clientList = null;
+        public static int BUFFERSIZE = 65536;
 
         public void startClient(TcpClient clientSocket, Dictionary<TcpClient, UserData> clientList)
         {
@@ -35,7 +36,7 @@ namespace GAZUAServer
             NetworkStream stream = null;
             try
             {
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[BUFFERSIZE];
                 string msg = string.Empty;
                 int bytes = 0;
                 int MessageCount = 0;
