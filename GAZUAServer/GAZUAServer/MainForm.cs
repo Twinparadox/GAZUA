@@ -23,6 +23,10 @@ namespace GAZUAServer
         AppendTextDelegate _textAppender;
         delegate void UpdateUserDelegate(Control ctrl, Dictionary<Socket, UserData> list);
         UpdateUserDelegate _userUpdater;
+        delegate void UpdateRankingDelegate(Control ctrl, List<UserData> list);
+        UpdateRankingDelegate _rankingUpdater;
+        delegate void UpdateStockDelegate(Control ctrl, List<Stock> list);
+        UpdateStockDelegate _stockUpdater;
 
         Socket mainSock;
         IPAddress thisAddress;
@@ -53,6 +57,7 @@ namespace GAZUAServer
             mainSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
             _textAppender = new AppendTextDelegate(AppendText);
             _userUpdater = new UpdateUserDelegate(UpdateUser);
+            _rankingUpdater = new UpdateRankingDelegate(UpdateRanking);
 
             ClientList = new Dictionary<Socket, UserData>();
         }
@@ -109,6 +114,20 @@ namespace GAZUAServer
                     idx++;
                 }
                 lvUserState.EndUpdate();
+            }
+        }
+
+        void UpdateRanking(Control ctrl, List<Stock> list)
+        {
+            if (ctrl.InvokeRequired)
+            {
+                ctrl.Invoke(_rankingUpdater, ctrl, list);
+            }
+            else
+            {
+                lvUserRanking.BeginUpdate();
+                lvUserRanking.Items.Clear();
+                lvUserRanking.EndUpdate();
             }
         }
 
@@ -511,11 +530,31 @@ namespace GAZUAServer
             AppendText(rtbServerState, string.Format("게임 시작, 남은 턴 : "+RestTurn.ToString()));
             UpdateUser(lvUserState, ClientList);
         }
+        #endregion
+
+        #region Game Playing
 
         void SendTurnData()
         {
 
         }
+        #endregion
+
+        #region Ranking
+        void Ranking()
+        {
+            List<UserData> userList = new List<UserData>();
+
+            foreach(var user in ClientList)
+            {
+                userList.Add(user.Value);
+            }
+
+            userList.Sort((a, b) => a.UserAsset>b.UserAsset?1:-1);
+
+
+        }
+
         #endregion
 
         #region Turn Over
