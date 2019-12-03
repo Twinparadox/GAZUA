@@ -18,10 +18,14 @@ namespace GAZUAClient
 {
     public partial class MainForm : Form
     {
+        delegate void ActivateButtonDelegate(Control ctrl, int flag);
+        ActivateButtonDelegate _buttonActivator;
         delegate void AppendTextDelegate(Control ctrl, string s);
         AppendTextDelegate _textAppender;
         delegate void UpdateStockDelegate(Control ctrl, List<Stock> list);
         UpdateStockDelegate _stockUpdater;
+        delegate void DrawChartDelegate(Control ctrl, int idx);
+        DrawChartDelegate _chartDrawer;
 
         Socket mainSock;
         IPAddress defaultAddress;
@@ -56,8 +60,10 @@ namespace GAZUAClient
             TradeList = new List<Trade>();
             
             mainSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
+            _buttonActivator = new ActivateButtonDelegate(ActivateButton);
             _textAppender = new AppendTextDelegate(AppendText);
             _stockUpdater = new UpdateStockDelegate(UpdateStock);
+            _chartDrawer = new DrawChartDelegate(DrawChart);
         }
 
         #region MainForm
@@ -71,6 +77,25 @@ namespace GAZUAClient
             btnTurnOver.Enabled = false;
             btnRanking.Enabled = false;
             tcTrade.Enabled = false;
+        }
+
+        private void ActivateButton(Control ctrl, int flag)
+        {
+            if(ctrl.InvokeRequired)
+            {
+                ctrl.Invoke(_buttonActivator, ctrl, flag);
+            }
+            else
+            {
+                if(flag==1)
+                {
+                    ctrl.Enabled = true;
+                }
+                else
+                {
+                    ctrl.Enabled = false;
+                }
+            }
         }
 
         private void AppendText(Control ctrl, string s)
@@ -126,6 +151,18 @@ namespace GAZUAClient
             }
         }
 
+        private void DrawChart(Control ctrl, int idx)
+        {
+            if(ctrl.InvokeRequired)
+            {
+                ctrl.Invoke(_chartDrawer, ctrl, idx);
+            }
+            else
+            {
+                DrawLineChart(idx);
+            }
+        }
+
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
         }
@@ -167,7 +204,11 @@ namespace GAZUAClient
                 // 서버 ip 주소와 메세지를 담도록 만든다.
                 IPEndPoint ip = (IPEndPoint)mainSock.LocalEndPoint;
 
-                byte[] buffer = Encoding.UTF8.GetBytes("{msgcode:1, NickName:" + tbNickName.Text + "}");
+                var json = new JObject();
+                json.Add("msgcode", 1);
+                json.Add("NickName", tbNickName.Text);
+                
+                byte[] buffer = Encoding.UTF8.GetBytes(json.ToString());
                 
                 // 서버에 전송한다.
                 mainSock.Send(buffer);
@@ -217,7 +258,7 @@ namespace GAZUAClient
             // Init
             if (strType == 1)
             {
-                btnConnect.Enabled = false;
+                ActivateButton(btnConnect, 2);
                 foreach (var item in StockList)
                 {
                     item.StartDate = 0;
@@ -228,15 +269,24 @@ namespace GAZUAClient
             // Start
             else if (strType == 2)
             {
-                btnTurnOver.Enabled = true;
-                btnRanking.Enabled = true;
-                tcTrade.Enabled = true;
+                ActivateButton(btnTurnOver, 1);
+                ActivateButton(btnRanking, 1);
+                ActivateButton(tcTrade, 1);
+                foreach (var item in StockList)
+                {
+                    item.StartDate = 0;
+                }
+                UpdateStock(lvStockState, StockList);
             }
 
             // Playing
             else if (strType == 3)
             {
-
+                foreach (var item in StockList)
+                {
+                    item.StartDate = 0;
+                }
+                UpdateStock(lvStockState, StockList);
             }
 
             // Ranking
@@ -338,6 +388,8 @@ namespace GAZUAClient
             t.Flag = 1;
 
             TradeList.Add(t);
+            
+            User.BuyStock(SelectedStock, StockList[SelectedStock].Name, Int32.Parse(tbBuy.Text), StockList[SelectedStock].Price);
         }
 
         private void btnSell_Click(object sender, EventArgs e)
@@ -367,8 +419,8 @@ namespace GAZUAClient
 
                 try
                 {
-                    int stockIdx = Int32.Parse(lvItem.SubItems[0].Text); 
-                    DrawLineChart(stockIdx);
+                    int stockIdx = Int32.Parse(lvItem.SubItems[0].Text);
+                    DrawChart(chartStock, stockIdx);
 
                     tbBuyPrice.Text = tbSellPrice.Text = stockList[stockIdx].PriceList.Last().ToString();
                     SelectedStock = stockIdx;
@@ -397,7 +449,7 @@ namespace GAZUAClient
 
             chartStock.Series[0].Points.Clear();
             chartStock.ChartAreas[0].AxisY.Minimum = minChart;
-            chartStock.ChartAreas[0].AxisX.Minimum = Turn;
+            chartStock.ChartAreas[0].AxisX.Minimum = 0;
 
             for (int i = 0; i < priceList.Capacity; i++)
             {

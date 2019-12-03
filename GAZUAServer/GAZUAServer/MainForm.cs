@@ -35,7 +35,9 @@ namespace GAZUAServer
 
         private static int counter;
         public static int startTurn = 200;
+        public static int Term = 30;
         public static int nTurns = 10;
+        public static int curTurn = 0;
         public static int PortNum = 5000;
         public static int BUFFERSIZE = 65536;
         public static int StartMoney = 10000000;
@@ -58,6 +60,7 @@ namespace GAZUAServer
             _textAppender = new AppendTextDelegate(AppendText);
             _userUpdater = new UpdateUserDelegate(UpdateUser);
             _rankingUpdater = new UpdateRankingDelegate(UpdateRanking);
+            _stockUpdater = new UpdateStockDelegate(UpdateStock);
 
             ClientList = new Dictionary<Socket, UserData>();
         }
@@ -139,6 +142,46 @@ namespace GAZUAServer
                     lvUserRanking.Items.Add(lvItem);
                 }
                 lvUserRanking.EndUpdate();
+            }
+        }
+
+        void UpdateStock(Control ctrl, List<Stock> list)
+        {
+            if(ctrl.InvokeRequired)
+            {
+                ctrl.Invoke(_stockUpdater, ctrl, list);
+            }
+            else
+            {
+                lvStockState.BeginUpdate();
+                lvStockState.Items.Clear();
+
+                int idx = 0;
+                foreach (Stock stock in StockList)
+                {
+                    List<int> priceList = stock.PriceList;
+                    int count = priceList.Count;
+                    int curPrice = priceList.Last();
+                    int prevPrice = priceList.ElementAt(count - 2);
+
+                    int sub = curPrice - prevPrice;
+                    float subRatio = (float)sub / prevPrice * 100;
+
+                    int minPrice = priceList.Min();
+                    int maxPrice = priceList.Max();
+
+                    ListViewItem lvItem = new ListViewItem(idx.ToString());
+                    lvItem.SubItems.Add(stock.Name);
+                    lvItem.SubItems.Add(curPrice.ToString());
+                    lvItem.SubItems.Add(sub.ToString());
+                    lvItem.SubItems.Add(subRatio.ToString("N2"));
+                    lvItem.SubItems.Add(maxPrice.ToString());
+                    lvItem.SubItems.Add(minPrice.ToString());
+                    lvStockState.Items.Add(lvItem);
+                    idx++;
+                }
+
+                lvStockState.EndUpdate();
             }
         }
 
@@ -261,7 +304,9 @@ namespace GAZUAServer
 
             byte[] buffer = null;
 
-            var json = JObject.Parse("{msgcode:1}");
+            var json = new JObject();
+            json.Add("msgcode", 1);
+
             var json1 = JsonConvert.SerializeObject(StockList);
             var json1str = json1.ToString();
 
@@ -292,83 +337,6 @@ namespace GAZUAServer
             btnClose.Enabled = false;
             btnGameStart.Enabled = false;
             btnListen.Enabled = true;
-        }
-
-        /*
-        private void InitSocket()
-        {
-            try
-            {
-                server = new TcpListener(IPAddress.Any, PortNum);
-                clientSocket = default(TcpClient);
-                server.Start();
-                UpdateServerState(">> Server Started");
-
-                while (true)
-                {
-                    try
-                    {
-                        counter++;
-                        clientSocket = server.AcceptTcpClient();
-                        UpdateServerState(">> Accept connection from client");
-
-                        NetworkStream stream = clientSocket.GetStream();
-                        byte[] buffer = new byte[BUFFERSIZE];
-                        int bytes = stream.Read(buffer, 0, buffer.Length);
-                        string user_name = Encoding.Unicode.GetString(buffer, 0, bytes);
-                        user_name = user_name.Substring(0, user_name.IndexOf("$"));
-
-                        ClientList.Add(clientSocket, new UserData(user_name, StartMoney));
-                        // send message all user
-                        //SendMessageAll(user_name + " Joined ", "", false);
-
-                        handleClient h_client = new handleClient();
-                        h_client.OnReceived += new handleClient.MessageDisplayHandler(OnReceived);
-                        h_client.OnDisconnected += new handleClient.DisconnectedHandler(h_client_OnDisconnected);
-                        h_client.startClient(clientSocket, ClientList);
-                    }
-                    catch (SocketException se)
-                    {
-                        Trace.WriteLine(string.Format("InitSocket - SocketException : {0}", se.Message));
-                        break;
-                    }
-                    catch (Exception ex)
-                    {
-                        Trace.WriteLine(string.Format("InitSocket - Exception : {0}", ex.Message));
-                        break;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.WriteLine(string.Format("InitSocket - Exception : {0}", ex.Message));
-            }
-        }
-        */
-
-        public void SendInitMessage(TcpClient client)
-        {
-            // 최초 메세지 전송
-            // 초기화된 데이터 전송
-            Trace.WriteLine(string.Format("[InitMessage] tcpclient : {0}", client));
-
-            using (NetworkStream stream = client.GetStream())
-            {
-                byte[] buffer = null;
-
-                var json = JObject.Parse("{msgcode:1}");
-                var json1 = JsonConvert.SerializeObject(StockList);
-                var json1str = json1.ToString();
-                                                
-                json.Add("StockList", JArray.Parse(json1str));
-
-                string strJson = json.ToString();
-
-                buffer = Encoding.Unicode.GetBytes(strJson);
-
-                stream.Write(buffer, 0, buffer.Length);
-                stream.Flush();
-            }
         }
         #endregion
 
@@ -445,7 +413,7 @@ namespace GAZUAServer
 
             chartStock.Series[0].Points.Clear();
             chartStock.ChartAreas[0].AxisY.Minimum = minChart;
-            chartStock.ChartAreas[0].AxisX.Minimum = RestTurn;
+            chartStock.ChartAreas[0].AxisX.Minimum = 0;
 
             for (int i = 0; i < priceList.Capacity; i++)
             {
@@ -490,8 +458,10 @@ namespace GAZUAServer
         private void btnGameStart_Click(object sender, EventArgs e)
         {
             RestTurn = nTurns;
+            curTurn = 1;
             SendStart();
             btnGameStart.Enabled = false;
+            Ranking();
         }
 
         void SendStart()
@@ -506,7 +476,10 @@ namespace GAZUAServer
             // 보낼 텍스트
             byte[] buffer = null;
 
-            var json = JObject.Parse("{msgcode:2, restTurn:"+RestTurn.ToString()+"}");
+            var json = new JObject();
+            json.Add("msgcode", 2);
+            json.Add("restTurn", RestTurn);
+
             var json1 = JsonConvert.SerializeObject(StockList);
             var json1str = json1.ToString();
 
@@ -544,6 +517,65 @@ namespace GAZUAServer
         #endregion
 
         #region Game Playing
+        private void btnNextTurn_Click(object sender, EventArgs e)
+        {
+            curTurn++;
+            RestTurn--;
+            
+            foreach(var st in StockList)
+            {
+                st.Turn++;
+            }
+
+            UpdateStock(lvStockState, StockList);
+
+            SendStockMessage();
+
+            AppendText(rtbServerState, string.Format("게임 시작, 남은 턴 : " + RestTurn.ToString()));
+        }
+
+        public void SendStockMessage()
+        {
+            // 서버가 대기중인지 확인한다.
+            if (!mainSock.IsBound)
+            {
+                MsgBoxHelper.Warn("서버가 실행되고 있지 않습니다!");
+                return;
+            }
+
+            byte[] buffer = null;
+
+            var json = new JObject();
+            json.Add("msgcode", 3);
+
+            var json1 = JsonConvert.SerializeObject(StockList);
+            var json1str = json1.ToString();
+
+            json.Add("StockList", JArray.Parse(json1str));
+
+            string strJson = json.ToString();
+
+            buffer = Encoding.UTF8.GetBytes(strJson);
+
+            // 연결된 모든 클라이언트에게 전송한다.
+            foreach (var client in ClientList)
+            {
+                Socket socket = client.Key;
+                try { socket.Send(buffer); }
+                catch
+                {
+                    // 오류 발생하면 전송 취소하고 리스트에서 삭제한다.
+                    try { socket.Dispose(); } catch { }
+                }
+            }
+            // 전송 완료 후 텍스트박스에 추가하고, 원래의 내용은 지운다.
+            AppendText(rtbServerState, string.Format("주식 데이터 전송 완료"));
+        }
+
+        private void TurnOver()
+        {
+
+        }
 
         void SendTurnData()
         {
@@ -562,17 +594,50 @@ namespace GAZUAServer
             }
 
             userList.Sort((a, b) => a.UserAsset>b.UserAsset?1:-1);
-
             UpdateRanking(lvUserRanking, userList);
         }
 
+        public void SendRankingMessage()
+        {
+            // 서버가 대기중인지 확인한다.
+            if (!mainSock.IsBound)
+            {
+                MsgBoxHelper.Warn("서버가 실행되고 있지 않습니다!");
+                return;
+            }
+
+            byte[] buffer = null;
+
+            var json = new JObject();
+            json.Add("msgcode", 4);
+
+            //var json1 = JsonConvert.SerializeObject(Rank);
+            var json1 = "1";
+            var json1str = json1.ToString();
+
+            json.Add("RankList", JArray.Parse(json1str));
+
+            string strJson = json.ToString();
+
+            buffer = Encoding.UTF8.GetBytes(strJson);
+
+            // 연결된 모든 클라이언트에게 전송한다.
+            foreach (var client in ClientList)
+            {
+                Socket socket = client.Key;
+                try { socket.Send(buffer); }
+                catch
+                {
+                    // 오류 발생하면 전송 취소하고 리스트에서 삭제한다.
+                    try { socket.Dispose(); } catch { }
+                }
+            }
+            // 전송 완료 후 텍스트박스에 추가하고, 원래의 내용은 지운다.
+            AppendText(rtbServerState, string.Format("주식 데이터 전송 완료"));
+        }
         #endregion
 
         #region Turn Over
-        private void TurnOver()
-        {
-
-        }
         #endregion
     }
 }
