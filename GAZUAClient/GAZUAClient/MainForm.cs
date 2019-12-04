@@ -26,6 +26,10 @@ namespace GAZUAClient
         UpdateStockDelegate _stockUpdater;
         delegate void DrawChartDelegate(Control ctrl, int idx);
         DrawChartDelegate _chartDrawer;
+        delegate void UpdateInfoTBDelegate(Control ctrl, UserData user);
+        UpdateInfoTBDelegate _infoTBUpdater;
+        delegate void UpdateInfoLVDeleagte(Control ctrl, UserData user);
+        UpdateInfoLVDeleagte _infoLVUpdater;
 
         Socket mainSock;
         IPAddress defaultAddress;
@@ -35,6 +39,7 @@ namespace GAZUAClient
         private UserData user = null;
         private bool isConnected = false;
         public static int BUFFERSIZE = 65536;
+        public static int INIT_MONEY = 0;
 
         private int gameState;
 
@@ -43,6 +48,7 @@ namespace GAZUAClient
         private int selectedStock;
         private List<Stock> stockList = null;
         private List<Trade> tradeList = null;
+        private List<UserData> ranking = null;
 
         internal UserData User { get => user; set => user = value; }
         public bool IsConnected { get => isConnected; set => isConnected = value; }
@@ -64,6 +70,8 @@ namespace GAZUAClient
             _textAppender = new AppendTextDelegate(AppendText);
             _stockUpdater = new UpdateStockDelegate(UpdateStock);
             _chartDrawer = new DrawChartDelegate(DrawChart);
+            _infoTBUpdater = new UpdateInfoTBDelegate(UpdateInfoTB);
+            _infoLVUpdater = new UpdateInfoLVDeleagte(UpdateInfoLV);
         }
 
         #region MainForm
@@ -163,6 +171,65 @@ namespace GAZUAClient
             }
         }
 
+        private void UpdateInfoTB(Control ctrl, UserData user)
+        {
+            if(ctrl.InvokeRequired)
+            {
+                ctrl.Invoke(_infoTBUpdater, ctrl, user);
+            }
+            else
+            {
+                if (ctrl.Equals(tbAssets))
+                {
+                    tbAssets.Text = user.UserAsset.ToString();
+                }
+                else if (ctrl.Equals(tbMoney))
+                {
+                    tbMoney.Text = user.UserMoney.ToString();
+                }
+                else
+                {
+                    float earning = (float)(user.UserAsset - INIT_MONEY) / INIT_MONEY;
+                    tbEarningRate.Text = (earning * 100).ToString("N3");
+                }
+            }
+        }
+
+        private void UpdateInfoLV(Control ctrl, UserData user)
+        {
+            if(ctrl.InvokeRequired)
+            {
+                ctrl.Invoke(_infoLVUpdater, ctrl, user);
+            }
+            else
+            {
+                lvMyState.BeginUpdate();
+                lvMyState.Items.Clear();
+
+                foreach(var stock in user.UserOwnStocks)
+                {
+                    ListViewItem lvItem = new ListViewItem(stock.StockIdx.ToString());
+                    int curPrice = StockList[stock.StockIdx].Price;
+                    float averPrice = stock.AverPrice;
+                    int numStock = stock.NumStock;
+                    int value = curPrice * numStock;
+                    float earning = value - (averPrice * numStock);
+                    float earningRate = earning / (averPrice * numStock) * 100;
+
+                    lvItem.SubItems.Add(stock.StockName);
+                    lvItem.SubItems.Add(curPrice.ToString());
+                    lvItem.SubItems.Add(averPrice.ToString("N2"));
+                    lvItem.SubItems.Add(numStock.ToString());
+                    lvItem.SubItems.Add(value.ToString());
+                    lvItem.SubItems.Add(earningRate.ToString("N3"));
+
+                    lvMyState.Items.Add(lvItem);
+                }
+
+                lvMyState.EndUpdate();
+            }
+        }
+
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
         }
@@ -212,6 +279,8 @@ namespace GAZUAClient
                 
                 // 서버에 전송한다.
                 mainSock.Send(buffer);
+
+                User.UserNickName = tbNickName.Text;
             }
             catch (Exception ex)
             {
@@ -249,26 +318,33 @@ namespace GAZUAClient
             var json = JObject.Parse(message);
 
             var msgType = json["msgcode"];
-            var msgData = json["StockList"];
-
-            StockList = JsonConvert.DeserializeObject<List<Stock>>(msgData.ToString());
 
             int strType = Int32.Parse(msgType.ToString());
 
             // Init
             if (strType == 1)
             {
+                var msgInitMoney = json["initmoney"];
+                var msgData = json["StockList"];
+                StockList = JsonConvert.DeserializeObject<List<Stock>>(msgData.ToString());
+
+                User.UserMoney = Int32.Parse(msgInitMoney.ToString());
+                INIT_MONEY = Int32.Parse(msgInitMoney.ToString());
                 ActivateButton(btnConnect, 2);
                 foreach (var item in StockList)
                 {
                     item.StartDate = 0;
                 }
                 UpdateStock(lvStockState, StockList);
+                UpdateInfo();
             }
 
             // Start
             else if (strType == 2)
             {
+                var msgData = json["StockList"];
+                StockList = JsonConvert.DeserializeObject<List<Stock>>(msgData.ToString());
+
                 ActivateButton(btnTurnOver, 1);
                 ActivateButton(btnRanking, 1);
                 ActivateButton(tcTrade, 1);
@@ -277,22 +353,78 @@ namespace GAZUAClient
                     item.StartDate = 0;
                 }
                 UpdateStock(lvStockState, StockList);
+                UpdateInfo();
             }
 
             // Playing
             else if (strType == 3)
             {
+                var msgData = json["StockList"];
+                StockList = JsonConvert.DeserializeObject<List<Stock>>(msgData.ToString());
+
+                ActivateButton(btnTurnOver, 1);
+                ActivateButton(btnRanking, 1);
+                ActivateButton(tcTrade, 1);
                 foreach (var item in StockList)
                 {
                     item.StartDate = 0;
                 }
                 UpdateStock(lvStockState, StockList);
+                UpdateInfo();
             }
 
             // Ranking
+            else if (strType == 4)
+            {
+                var msgData = json["ranklist"];
+                ranking = JsonConvert.DeserializeObject<List<UserData>>(msgData.ToString());
+
+                int idx = 1;
+                foreach (var user in ranking)
+                {
+                    if (user.UserNickName.Equals(User.UserNickName))
+                    {
+                        break;
+                    }
+                    idx++;
+                }
+
+                int count = ranking.Count();
+                MsgBoxHelper.Info("당신의 순위\n" + count.ToString() + "명 중\n" + idx.ToString() + "위");
+            }
+
+            // End Game, strType == 5
             else
             {
+                ActivateButton(btnTurnOver, 0);
+                ActivateButton(btnRanking, 1);
+                ActivateButton(tcTrade, 0);
 
+                var msgData = json["ranklist"];
+                ranking = JsonConvert.DeserializeObject<List<UserData>>(msgData.ToString());
+
+                int idx = 1;
+                foreach(var user in ranking)
+                {
+                    if(user.UserNickName.Equals(User.UserNickName))
+                    {
+                        break;
+                    }
+                    idx++;
+                }
+
+                if(idx == 1)
+                {
+                    MsgBoxHelper.Info("우승하였습니다.");
+                }
+                else if(idx == 2)
+                {
+                    MsgBoxHelper.Info("준우승하였습니다.");
+                }
+                else
+                {
+                    MsgBoxHelper.Info("당신의 순위는 " + idx.ToString() + "위입니다.");
+                }
             }
 
             // 텍스트박스에 추가해준다.
@@ -349,36 +481,39 @@ namespace GAZUAClient
                 return;
             }
 
-            // 보낼 텍스트
-            string tts = "HELLO";
-            if (string.IsNullOrEmpty(tts))
-            {
-                MsgBoxHelper.Warn("텍스트가 입력되지 않았습니다!");
-                return;
-            }
+            var json = new JObject();
+            json.Add("msgcode", 3);
+            json.Add("userdata", JsonConvert.SerializeObject(User));
 
+            var json1 = JsonConvert.SerializeObject(User.UserOwnStocks);
+            var json1str = json1.ToString();
+            json.Add("userowns", JArray.Parse(json1str));
+
+            string strJson = json.ToString();
+            
             // 서버 ip 주소와 메세지를 담도록 만든다.
             IPEndPoint ip = (IPEndPoint)mainSock.LocalEndPoint;
             string addr = ip.Address.ToString();
 
             // 문자열을 utf8 형식의 바이트로 변환한다.
-            byte[] bDts = Encoding.UTF8.GetBytes(addr + '\x01' + tts);
+            byte[] buffer = Encoding.UTF8.GetBytes(strJson);
 
             // 서버에 전송한다.
-            mainSock.Send(bDts);
+            mainSock.Send(buffer);
 
             TradeList.Clear();
         }
 
         private void btnMaxBuy_Click(object sender, EventArgs e)
         {
-            
+            int n = 0;
+
+            int userMoney = User.UserMoney;
+            n = userMoney / Int32.Parse(tbBuyPrice.Text);
+ 
+            tbBuy.Text = n.ToString();
         }
 
-        private void btnMaxSell_Click(object sender, EventArgs e)
-        {
-
-        }
         private void btnBuy_Click(object sender, EventArgs e)
         {
             Trade t = new Trade();
@@ -388,8 +523,34 @@ namespace GAZUAClient
             t.Flag = 1;
 
             TradeList.Add(t);
-            
+
             User.BuyStock(SelectedStock, StockList[SelectedStock].Name, Int32.Parse(tbBuy.Text), StockList[SelectedStock].Price);
+            UpdateInfo();
+        }
+
+        private void btnMaxSell_Click(object sender, EventArgs e)
+        {
+            int n = 0;
+            bool flag = false;
+
+            // 보유 주식 있는지 없는지 확인
+            if(User.HasStock(selectedStock) == -1)
+            {
+                MsgBoxHelper.Info("보유 주식이 없습니다!");
+                tbSell.Text = "0";
+            }
+            else
+            {
+                foreach(var owns in User.UserOwnStocks)
+                {
+                    if(owns.StockIdx == SelectedStock)
+                    {
+                        n = owns.NumStock;
+                        break;
+                    }
+                }
+                tbSell.Text = n.ToString();
+            }
         }
 
         private void btnSell_Click(object sender, EventArgs e)
@@ -401,6 +562,8 @@ namespace GAZUAClient
             t.Flag = 2;
 
             TradeList.Add(t);
+            User.SellStock(SelectedStock, StockList[SelectedStock].Name, Int32.Parse(tbSell.Text), StockList[SelectedStock].Price);
+            UpdateInfo();
         }
 
         public void UpdateData()
@@ -480,5 +643,48 @@ namespace GAZUAClient
         }
         #endregion
 
+        #region NewTurn
+        private void UpdateInfo()
+        {
+            foreach(var owns in User.UserOwnStocks)
+            {
+                owns.CurPrice = StockList[owns.StockIdx].Price;
+            }
+
+            UpdateInfoTB(tbMoney, User);
+            UpdateInfoTB(tbAssets, User);
+            UpdateInfoTB(tbEarningRate, User);
+
+            UpdateInfoLV(lvMyState, User);
+        }
+        #endregion
+
+        #region Ranking Button
+        private void btnRanking_Click(object sender, EventArgs e)
+        {
+            // 서버가 대기중인지 확인한다.
+            if (!mainSock.IsBound)
+            {
+                MsgBoxHelper.Warn("서버가 실행되고 있지 않습니다!");
+                return;
+            }
+
+            var json = new JObject();
+            json.Add("msgcode", 4);
+            json.Add("nickname", User.UserNickName);
+
+            string strJson = json.ToString();
+
+            // 서버 ip 주소와 메세지를 담도록 만든다.
+            IPEndPoint ip = (IPEndPoint)mainSock.LocalEndPoint;
+            string addr = ip.Address.ToString();
+
+            // 문자열을 utf8 형식의 바이트로 변환한다.
+            byte[] buffer = Encoding.UTF8.GetBytes(strJson);
+
+            // 서버에 전송한다.
+            mainSock.Send(buffer);
+        }
+        #endregion
     }
 }

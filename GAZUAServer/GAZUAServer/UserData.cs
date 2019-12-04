@@ -8,18 +8,20 @@ namespace GAZUAServer
 {
     class UserData
     {
-        class OwnStock
+        public class OwnStock
         {
             private int stockIdx;
             private string stockName;
             private int numStock;
             private float averPrice;
+            private int curPrice;
 
             public int StockIdx { get => stockIdx; set => stockIdx = value; }
             public string StockName { get => stockName; set => stockName = value; }
             public int NumStock { get => numStock; set => numStock = value; }
             public float AverPrice { get => averPrice; set => averPrice = value; }
-            public int Sum { get => (int)(averPrice * numStock); }
+            public int Sum { get => (int)(curPrice * numStock); }
+            public int CurPrice { get => curPrice; set => curPrice = value; }
 
             public OwnStock(int idx, string name)
             {
@@ -53,13 +55,15 @@ namespace GAZUAServer
 
         public string UserNickName { get => userNickName; set => userNickName = value; }
         public int UserMoney { get => userMoney; set => userMoney = value; }
+        public List<OwnStock> UserOwnStocks { get => userOwnStocks; set => userOwnStocks = value; }
+
         public int UserStocks
         {
             get
             {
                 int sum = 0;
 
-                foreach(var owns in userOwnStocks)
+                foreach (var owns in UserOwnStocks)
                 {
                     sum += owns.Sum;
                 }
@@ -71,9 +75,9 @@ namespace GAZUAServer
         {
             get
             {
-                int sum = userMoney;
+                int sum = UserMoney;
 
-                foreach(var owns in userOwnStocks)
+                foreach (var owns in UserOwnStocks)
                 {
                     sum += owns.Sum;
                 }
@@ -82,8 +86,13 @@ namespace GAZUAServer
             }
         }
 
-        private List<OwnStock> UserOwnStocks { get => userOwnStocks; set => userOwnStocks = value; }
         public int IsReady { get => isReady; set => isReady = value; }
+
+        public UserData()
+        {
+            UserOwnStocks = new List<OwnStock>();
+            IsReady = 0;
+        }
 
         public UserData(string nickname, int money)
         {
@@ -93,29 +102,48 @@ namespace GAZUAServer
             IsReady = 0;
         }
 
+        public int HasStock(int stockIdx)
+        {
+            int n = -1;
+
+            foreach (var stock in UserOwnStocks)
+            {
+                if (stock.StockIdx == stockIdx)
+                {
+                    n = stock.NumStock;
+                    break;
+                }
+            }
+
+            return n;
+        }
+
         public void BuyStock(int stockIdx, string stockName, int nStock, int price)
         {
             int idx = 0;
             bool flag = false;
 
-            foreach(var own in UserOwnStocks)
+            foreach (var own in UserOwnStocks)
             {
-                if(own.StockIdx == stockIdx)
+                if (own.StockIdx == stockIdx)
                 {
                     flag = true;
                     break;
                 }
-                idx++; 
+                idx++;
             }
 
-            if(flag)
+            if (flag)
             {
                 UserOwnStocks[idx].BuyStock(nStock, price);
+                UserMoney -= nStock * price;
             }
             else
             {
                 OwnStock own = new OwnStock(stockIdx, stockName);
                 own.BuyStock(nStock, price);
+                UserMoney -= nStock * price;
+
                 UserOwnStocks.Add(own);
             }
         }
@@ -135,9 +163,15 @@ namespace GAZUAServer
                 idx++;
             }
 
-            if(flag)
+            if (flag)
             {
                 UserMoney += UserOwnStocks[idx].SellStock(nStock, price);
+
+                // 더 이상 주식을 소유하고 있지 않은 경우 제거
+                if (UserOwnStocks[idx].NumStock == 0)
+                {
+                    UserOwnStocks.RemoveAt(idx);
+                }
             }
         }
     }

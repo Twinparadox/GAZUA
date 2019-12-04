@@ -19,6 +19,8 @@ namespace GAZUAServer
 {
     public partial class MainForm : Form
     {
+        delegate void ActivateButtonDelegate(Control ctrl, int flag);
+        ActivateButtonDelegate _buttonActivator;
         delegate void AppendTextDelegate(Control ctrl, string s);
         AppendTextDelegate _textAppender;
         delegate void UpdateUserDelegate(Control ctrl, Dictionary<Socket, UserData> list);
@@ -57,12 +59,32 @@ namespace GAZUAServer
         {
             InitializeComponent();
             mainSock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
+            _buttonActivator = new ActivateButtonDelegate(ActivateButton);
             _textAppender = new AppendTextDelegate(AppendText);
             _userUpdater = new UpdateUserDelegate(UpdateUser);
             _rankingUpdater = new UpdateRankingDelegate(UpdateRanking);
             _stockUpdater = new UpdateStockDelegate(UpdateStock);
 
             ClientList = new Dictionary<Socket, UserData>();
+        }
+
+        private void ActivateButton(Control ctrl, int flag)
+        {
+            if (ctrl.InvokeRequired)
+            {
+                ctrl.Invoke(_buttonActivator, ctrl, flag);
+            }
+            else
+            {
+                if (flag == 1)
+                {
+                    ctrl.Enabled = true;
+                }
+                else
+                {
+                    ctrl.Enabled = false;
+                }
+            }
         }
 
         void AppendText(Control ctrl, string s)
@@ -86,6 +108,14 @@ namespace GAZUAServer
             }
             else
             {
+                foreach (var user in list)
+                {
+                    foreach (var owns in user.Value.UserOwnStocks)
+                    {
+                        owns.CurPrice = StockList[owns.StockIdx].Price;
+                    }
+                }
+
                 lvUserState.BeginUpdate();
                 lvUserState.Items.Clear();
 
@@ -140,6 +170,8 @@ namespace GAZUAServer
                     lvItem.SubItems.Add(((float)(user.UserAsset)/1000).ToString("N2"));
 
                     lvUserRanking.Items.Add(lvItem);
+
+                    idx++;
                 }
                 lvUserRanking.EndUpdate();
             }
@@ -268,18 +300,43 @@ namespace GAZUAServer
 
             // 텍스트로 변환한다.
             string message = Encoding.UTF8.GetString(obj.Buffer);
-
             var json = JObject.Parse(message);
-
             var msgType = json["msgcode"];
-
             int strType = Int32.Parse(msgType.ToString());
 
+            // Init
             if (strType == 1)
             {
                 string msgData = json["NickName"].ToString();
                 ClientList[obj.WorkingSocket].UserNickName = msgData;
                 UpdateUser(lvUserState, ClientList);
+            }
+
+            // Playing - Turn Over
+            else if(strType == 3)
+            {
+                var userData = json["userdata"];
+                UserData user = JsonConvert.DeserializeObject<UserData>(userData.ToString());
+
+                var ownsData = json["userowns"];
+                user.UserOwnStocks = JsonConvert.DeserializeObject<List<UserData.OwnStock>>(ownsData.ToString());
+
+                ClientList[obj.WorkingSocket] = user;
+                UpdateUser(lvUserState, ClientList);
+            }
+
+            // Playing - Ranking, strType == 4
+            else
+            {
+                List<UserData> userList = new List<UserData>();
+
+                foreach (var user in ClientList)
+                {
+                    userList.Add(user.Value);
+                }
+                userList = userList.OrderByDescending(x => x.UserAsset).ToList();
+
+                SendRanking(obj.WorkingSocket, userList);
             }
 
             // 텍스트박스에 추가해준다.
@@ -306,6 +363,7 @@ namespace GAZUAServer
 
             var json = new JObject();
             json.Add("msgcode", 1);
+            json.Add("initmoney", 10000000);
 
             var json1 = JsonConvert.SerializeObject(StockList);
             var json1str = json1.ToString();
@@ -519,19 +577,39 @@ namespace GAZUAServer
         #region Game Playing
         private void btnNextTurn_Click(object sender, EventArgs e)
         {
+            foreach(var user in ClientList)
+            {
+                if(user.Value.IsReady == 1)
+                {
+                    MsgBoxHelper.Error("아직 턴을 마치지 않은 유저가 있습니다.");
+                    return;
+                }
+            }
+
             curTurn++;
             RestTurn--;
             
+            if(RestTurn == 0)
+            {
+                ActivateButton(btnNextTurn, 0);
+                ActivateButton(btnGameStart, 1);
+                MsgBoxHelper.Info("턴 종료");
+                EndGame();
+                return;
+            }
+
             foreach(var st in StockList)
             {
                 st.Turn++;
             }
 
             UpdateStock(lvStockState, StockList);
+            UpdateUser(lvUserState, ClientList);
+            Ranking();
 
             SendStockMessage();
 
-            AppendText(rtbServerState, string.Format("게임 시작, 남은 턴 : " + RestTurn.ToString()));
+            AppendText(rtbServerState, string.Format("남은 턴 : " + RestTurn.ToString()));
         }
 
         public void SendStockMessage()
@@ -571,15 +649,65 @@ namespace GAZUAServer
             // 전송 완료 후 텍스트박스에 추가하고, 원래의 내용은 지운다.
             AppendText(rtbServerState, string.Format("주식 데이터 전송 완료"));
         }
+        #endregion
 
-        private void TurnOver()
-        {
+        #region End Game
+        private void EndGame()
+        {// 서버가 대기중인지 확인한다.
+            if (!mainSock.IsBound)
+            {
+                MsgBoxHelper.Warn("서버가 실행되고 있지 않습니다!");
+                return;
+            }
 
-        }
+            // 보낼 텍스트
+            byte[] buffer = null;
 
-        void SendTurnData()
-        {
+            var json = new JObject();
+            json.Add("msgcode", 5);
+            
+            List<UserData> userList = new List<UserData>();
 
+            foreach (var user in ClientList)
+            {
+                userList.Add(user.Value);
+            }
+
+            userList = userList.OrderByDescending(x => x.UserAsset).ToList();
+            UpdateRanking(lvUserRanking, userList);
+
+            var json1 = JsonConvert.SerializeObject(userList);
+            var json1str = json1.ToString();
+            json.Add("ranklist", JArray.Parse(json1str));
+
+            string strJson = json.ToString();
+
+            buffer = Encoding.UTF8.GetBytes(strJson);
+
+            // 연결된 모든 클라이언트에게 전송한다.
+            foreach (var client in ClientList)
+            {
+                Socket socket = client.Key;
+                try
+                {
+                    socket.Send(buffer);
+                    client.Value.IsReady = 1;
+                }
+                catch
+                {
+                    // 오류 발생하면 전송 취소하고 리스트에서 삭제한다.
+                    try
+                    {
+                        socket.Dispose();
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+            // 전송 완료 후 텍스트박스에 추가하고, 원래의 내용은 지운다.
+            AppendText(rtbServerState, string.Format("게임 종료"));
+            UpdateUser(lvUserState, ClientList);
         }
         #endregion
 
@@ -592,12 +720,10 @@ namespace GAZUAServer
             {
                 userList.Add(user.Value);
             }
-
-            userList.Sort((a, b) => a.UserAsset>b.UserAsset?1:-1);
-            UpdateRanking(lvUserRanking, userList);
+            UpdateRanking(lvUserRanking, userList.OrderByDescending(x => x.UserAsset).ToList());
         }
 
-        public void SendRankingMessage()
+        private void SendRanking(Socket socket, List<UserData> list)
         {
             // 서버가 대기중인지 확인한다.
             if (!mainSock.IsBound)
@@ -610,30 +736,22 @@ namespace GAZUAServer
 
             var json = new JObject();
             json.Add("msgcode", 4);
-
-            //var json1 = JsonConvert.SerializeObject(Rank);
-            var json1 = "1";
+            
+            var json1 = JsonConvert.SerializeObject(list);
             var json1str = json1.ToString();
-
-            json.Add("RankList", JArray.Parse(json1str));
+            json.Add("ranklist", JArray.Parse(json1str));
 
             string strJson = json.ToString();
-
             buffer = Encoding.UTF8.GetBytes(strJson);
 
-            // 연결된 모든 클라이언트에게 전송한다.
-            foreach (var client in ClientList)
+            try { socket.Send(buffer); }
+            catch
             {
-                Socket socket = client.Key;
-                try { socket.Send(buffer); }
-                catch
-                {
-                    // 오류 발생하면 전송 취소하고 리스트에서 삭제한다.
-                    try { socket.Dispose(); } catch { }
-                }
+                // 오류 발생하면 전송 취소하고 리스트에서 삭제한다.
+                try { socket.Dispose(); } catch { }
             }
             // 전송 완료 후 텍스트박스에 추가하고, 원래의 내용은 지운다.
-            AppendText(rtbServerState, string.Format("주식 데이터 전송 완료"));
+            AppendText(rtbServerState, string.Format(ClientList[socket].UserNickName+"에게 랭킹 데이터 전송 완료"));
         }
         #endregion
 

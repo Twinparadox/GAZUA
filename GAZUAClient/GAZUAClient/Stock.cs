@@ -23,7 +23,7 @@ namespace GAZUAClient
 
         public int Price
         {
-            get { return priceList[term + Turn - 1]; }
+            get { return PriceList[term + Turn - 1]; }
         }
         public List<int> PriceList
         {

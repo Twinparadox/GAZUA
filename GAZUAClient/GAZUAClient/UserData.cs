@@ -8,18 +8,20 @@ namespace GAZUAClient
 {
     class UserData
     {
-        class OwnStock
+        public class OwnStock
         {
             private int stockIdx;
             private string stockName;
             private int numStock;
             private float averPrice;
+            private int curPrice;
 
             public int StockIdx { get => stockIdx; set => stockIdx = value; }
             public string StockName { get => stockName; set => stockName = value; }
             public int NumStock { get => numStock; set => numStock = value; }
             public float AverPrice { get => averPrice; set => averPrice = value; }
-            public int Sum { get => (int)(averPrice * numStock); }
+            public int Sum { get => (int)(curPrice * numStock); }
+            public int CurPrice { get => curPrice; set => curPrice = value; }
 
             public OwnStock(int idx, string name)
             {
@@ -53,13 +55,15 @@ namespace GAZUAClient
 
         public string UserNickName { get => userNickName; set => userNickName = value; }
         public int UserMoney { get => userMoney; set => userMoney = value; }
+        public List<OwnStock> UserOwnStocks { get => userOwnStocks; set => userOwnStocks = value; }
+
         public int UserStocks
         {
             get
             {
                 int sum = 0;
 
-                foreach (var owns in userOwnStocks)
+                foreach (var owns in UserOwnStocks)
                 {
                     sum += owns.Sum;
                 }
@@ -73,7 +77,7 @@ namespace GAZUAClient
             {
                 int sum = UserMoney;
 
-                foreach (var owns in userOwnStocks)
+                foreach (var owns in UserOwnStocks)
                 {
                     sum += owns.Sum;
                 }
@@ -82,8 +86,13 @@ namespace GAZUAClient
             }
         }
 
-        private List<OwnStock> UserOwnStocks { get => userOwnStocks; set => userOwnStocks = value; }
         public int IsReady { get => isReady; set => isReady = value; }
+
+        public UserData()
+        {
+            UserOwnStocks = new List<OwnStock>();
+            IsReady = 0;
+        }
 
         public UserData(string nickname, int money)
         {
@@ -91,6 +100,22 @@ namespace GAZUAClient
             UserMoney = money;
             UserOwnStocks = new List<OwnStock>();
             IsReady = 0;
+        }
+
+        public int HasStock(int stockIdx)
+        {
+            int n = -1;
+
+            foreach(var stock in UserOwnStocks)
+            {
+                if (stock.StockIdx == stockIdx)
+                {
+                    n = stock.NumStock;
+                    break;
+                }
+            }
+
+            return n;
         }
 
         public void BuyStock(int stockIdx, string stockName, int nStock, int price)
@@ -148,11 +173,6 @@ namespace GAZUAClient
                     UserOwnStocks.RemoveAt(idx);
                 }
             }
-        }
-
-        public UserData()
-        {
-
         }
     }
 }

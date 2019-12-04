@@ -16,11 +16,15 @@ namespace GAZUAServer
         private int nTurns;
         private int startDate;
         private static int term;
-        
+
         public string Name { get => name; set => name = value; }
         public int Turn { get => turn; set => turn = value; }
         public int StartDate { get => startDate; set => startDate = value; }
 
+        public int Price
+        {
+            get { return PriceList[term + Turn - 1]; }
+        }
         public List<int> PriceList
         {
             get { return priceList.GetRange(StartDate, term + Turn); }
