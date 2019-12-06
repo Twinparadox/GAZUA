@@ -686,5 +686,6 @@ namespace GAZUAClient
             mainSock.Send(buffer);
         }
         #endregion
+
     }
 }

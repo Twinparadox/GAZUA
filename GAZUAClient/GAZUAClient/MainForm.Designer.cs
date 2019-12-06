@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.lvMyState = new System.Windows.Forms.ListView();
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -77,6 +77,8 @@
             this.tbPort = new System.Windows.Forms.TextBox();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStrip();
             this.tbNickName = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
             this.groupBoxMyData.SuspendLayout();
             this.groupBoxStockData.SuspendLayout();
             this.tcTrade.SuspendLayout();
@@ -461,19 +463,19 @@
             // 
             // chartStock
             // 
-            chartArea1.AxisX.MajorGrid.LineWidth = 0;
-            chartArea1.AxisY.MajorGrid.LineWidth = 0;
-            chartArea1.Name = "ChartArea1";
-            this.chartStock.ChartAreas.Add(chartArea1);
+            chartArea3.AxisX.MajorGrid.LineWidth = 0;
+            chartArea3.AxisY.MajorGrid.LineWidth = 0;
+            chartArea3.Name = "ChartArea1";
+            this.chartStock.ChartAreas.Add(chartArea3);
             this.chartStock.Location = new System.Drawing.Point(7, 25);
             this.chartStock.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.chartStock.Name = "chartStock";
             this.chartStock.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None;
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series1.Name = "Series1";
-            series1.YValuesPerPoint = 2;
-            this.chartStock.Series.Add(series1);
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Name = "Series1";
+            series3.YValuesPerPoint = 2;
+            this.chartStock.Series.Add(series3);
             this.chartStock.Size = new System.Drawing.Size(1033, 382);
             this.chartStock.TabIndex = 2;
             this.chartStock.Text = "chart1";
@@ -523,10 +525,10 @@
             // tbPort
             // 
             this.tbPort.Font = new System.Drawing.Font("굴림", 18F);
-            this.tbPort.Location = new System.Drawing.Point(718, 622);
+            this.tbPort.Location = new System.Drawing.Point(832, 622);
             this.tbPort.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tbPort.Name = "tbPort";
-            this.tbPort.Size = new System.Drawing.Size(185, 42);
+            this.tbPort.Size = new System.Drawing.Size(80, 42);
             this.tbPort.TabIndex = 15;
             this.tbPort.Text = "5000";
             this.tbPort.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbPort_KeyPress);
@@ -542,18 +544,40 @@
             // tbNickName
             // 
             this.tbNickName.Font = new System.Drawing.Font("굴림", 18F);
-            this.tbNickName.Location = new System.Drawing.Point(718, 674);
+            this.tbNickName.Location = new System.Drawing.Point(832, 672);
             this.tbNickName.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tbNickName.Name = "tbNickName";
             this.tbNickName.Size = new System.Drawing.Size(185, 42);
             this.tbNickName.TabIndex = 17;
             this.tbNickName.Text = "5000";
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("굴림", 14F);
+            this.label7.Location = new System.Drawing.Point(720, 628);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(106, 24);
+            this.label7.TabIndex = 18;
+            this.label7.Text = "포트번호";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("굴림", 24F);
+            this.label8.Location = new System.Drawing.Point(769, 672);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(57, 40);
+            this.label8.TabIndex = 19;
+            this.label8.Text = "ID";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1082, 853);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.tbNickName);
             this.Controls.Add(this.toolStripStatusLabel);
             this.Controls.Add(this.tbPort);
@@ -631,6 +655,8 @@
         private System.Windows.Forms.ColumnHeader columnNumStock;
         private System.Windows.Forms.ColumnHeader columnValue;
         private System.Windows.Forms.ColumnHeader columnEarningRate;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label8;
     }
 }
 

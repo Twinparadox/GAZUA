@@ -132,15 +132,15 @@ namespace GAZUAServer
 
                     if (user.IsReady == 1)
                     {
-                        lvItem.SubItems.Add("Wait");
+                        lvItem.SubItems.Add("Doing");
                     }
                     else if (user.IsReady == 2)
                     {
-                        lvItem.SubItems.Add("On");
+                        lvItem.SubItems.Add("Done");
                     }
                     else
                     {
-                        lvItem.SubItems.Add("Off");
+                        lvItem.SubItems.Add("Waiting");
                     }
 
                     lvUserState.Items.Add(lvItem);
@@ -322,6 +322,7 @@ namespace GAZUAServer
                 user.UserOwnStocks = JsonConvert.DeserializeObject<List<UserData.OwnStock>>(ownsData.ToString());
 
                 ClientList[obj.WorkingSocket] = user;
+                ClientList[obj.WorkingSocket].IsReady = 2;
                 UpdateUser(lvUserState, ClientList);
             }
 
@@ -603,11 +604,11 @@ namespace GAZUAServer
                 st.Turn++;
             }
 
+            SendStockMessage();
+
             UpdateStock(lvStockState, StockList);
             UpdateUser(lvUserState, ClientList);
             Ranking();
-
-            SendStockMessage();
 
             AppendText(rtbServerState, string.Format("남은 턴 : " + RestTurn.ToString()));
         }
@@ -639,6 +640,7 @@ namespace GAZUAServer
             foreach (var client in ClientList)
             {
                 Socket socket = client.Key;
+                client.Value.IsReady = 1;
                 try { socket.Send(buffer); }
                 catch
                 {
