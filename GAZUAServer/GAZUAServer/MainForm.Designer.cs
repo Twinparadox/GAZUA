@@ -48,7 +48,6 @@
             this.columnReady = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.groupBoxStockData = new System.Windows.Forms.GroupBox();
             this.groupBoxUserData = new System.Windows.Forms.GroupBox();
-            this.btnListen = new System.Windows.Forms.Button();
             this.groupBoxRank = new System.Windows.Forms.GroupBox();
             this.lvUserRanking = new System.Windows.Forms.ListView();
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -59,6 +58,7 @@
             this.rtbServerState = new System.Windows.Forms.RichTextBox();
             this.btnClose = new System.Windows.Forms.Button();
             this.btnGameStart = new System.Windows.Forms.Button();
+            this.btnListen = new System.Windows.Forms.Button();
             this.btnNextTurn = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.chartStock)).BeginInit();
             this.groupBoxStockData.SuspendLayout();
@@ -73,14 +73,13 @@
             chartArea2.AxisY.MajorGrid.LineWidth = 0;
             chartArea2.Name = "ChartArea1";
             this.chartStock.ChartAreas.Add(chartArea2);
-            this.chartStock.Location = new System.Drawing.Point(5, 25);
-            this.chartStock.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.chartStock.Location = new System.Drawing.Point(4, 20);
             this.chartStock.Name = "chartStock";
             series2.ChartArea = "ChartArea1";
             series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             series2.Name = "Series1";
             this.chartStock.Series.Add(series2);
-            this.chartStock.Size = new System.Drawing.Size(686, 375);
+            this.chartStock.Size = new System.Drawing.Size(600, 300);
             this.chartStock.TabIndex = 0;
             this.chartStock.Text = "chart1";
             this.chartStock.Click += new System.EventHandler(this.chart1_Click);
@@ -98,11 +97,10 @@
             this.lvStockState.FullRowSelect = true;
             this.lvStockState.GridLines = true;
             this.lvStockState.HideSelection = false;
-            this.lvStockState.Location = new System.Drawing.Point(5, 414);
-            this.lvStockState.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.lvStockState.Location = new System.Drawing.Point(4, 331);
             this.lvStockState.Name = "lvStockState";
             this.lvStockState.ShowItemToolTips = true;
-            this.lvStockState.Size = new System.Drawing.Size(685, 214);
+            this.lvStockState.Size = new System.Drawing.Size(600, 172);
             this.lvStockState.TabIndex = 1;
             this.lvStockState.UseCompatibleStateImageBehavior = false;
             this.lvStockState.View = System.Windows.Forms.View.Details;
@@ -160,11 +158,10 @@
             this.columnUserAsset,
             this.columnReady});
             this.lvUserState.HideSelection = false;
-            this.lvUserState.Location = new System.Drawing.Point(5, 22);
-            this.lvUserState.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.lvUserState.Location = new System.Drawing.Point(4, 18);
             this.lvUserState.Name = "lvUserState";
             this.lvUserState.ShowItemToolTips = true;
-            this.lvUserState.Size = new System.Drawing.Size(685, 184);
+            this.lvUserState.Size = new System.Drawing.Size(600, 148);
             this.lvUserState.TabIndex = 3;
             this.lvUserState.UseCompatibleStateImageBehavior = false;
             this.lvUserState.View = System.Windows.Forms.View.Details;
@@ -207,11 +204,9 @@
             // 
             this.groupBoxStockData.Controls.Add(this.lvStockState);
             this.groupBoxStockData.Controls.Add(this.chartStock);
-            this.groupBoxStockData.Location = new System.Drawing.Point(14, 238);
-            this.groupBoxStockData.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.groupBoxStockData.Location = new System.Drawing.Point(12, 190);
             this.groupBoxStockData.Name = "groupBoxStockData";
-            this.groupBoxStockData.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBoxStockData.Size = new System.Drawing.Size(697, 636);
+            this.groupBoxStockData.Size = new System.Drawing.Size(610, 509);
             this.groupBoxStockData.TabIndex = 5;
             this.groupBoxStockData.TabStop = false;
             this.groupBoxStockData.Text = "현재 주가 정보";
@@ -219,34 +214,19 @@
             // groupBoxUserData
             // 
             this.groupBoxUserData.Controls.Add(this.lvUserState);
-            this.groupBoxUserData.Location = new System.Drawing.Point(14, 15);
-            this.groupBoxUserData.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.groupBoxUserData.Location = new System.Drawing.Point(12, 12);
             this.groupBoxUserData.Name = "groupBoxUserData";
-            this.groupBoxUserData.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBoxUserData.Size = new System.Drawing.Size(697, 215);
+            this.groupBoxUserData.Size = new System.Drawing.Size(610, 172);
             this.groupBoxUserData.TabIndex = 6;
             this.groupBoxUserData.TabStop = false;
             this.groupBoxUserData.Text = "유저 정보";
             // 
-            // btnListen
-            // 
-            this.btnListen.Location = new System.Drawing.Point(718, 651);
-            this.btnListen.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.btnListen.Name = "btnListen";
-            this.btnListen.Size = new System.Drawing.Size(166, 61);
-            this.btnListen.TabIndex = 7;
-            this.btnListen.Text = "서버 시작";
-            this.btnListen.UseVisualStyleBackColor = true;
-            this.btnListen.Click += new System.EventHandler(this.btnListen_Click);
-            // 
             // groupBoxRank
             // 
             this.groupBoxRank.Controls.Add(this.lvUserRanking);
-            this.groupBoxRank.Location = new System.Drawing.Point(718, 15);
-            this.groupBoxRank.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.groupBoxRank.Location = new System.Drawing.Point(628, 12);
             this.groupBoxRank.Name = "groupBoxRank";
-            this.groupBoxRank.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBoxRank.Size = new System.Drawing.Size(347, 215);
+            this.groupBoxRank.Size = new System.Drawing.Size(304, 172);
             this.groupBoxRank.TabIndex = 8;
             this.groupBoxRank.TabStop = false;
             this.groupBoxRank.Text = "유저 랭킹";
@@ -259,10 +239,9 @@
             this.columnID,
             this.columnAsset});
             this.lvUserRanking.HideSelection = false;
-            this.lvUserRanking.Location = new System.Drawing.Point(7, 25);
-            this.lvUserRanking.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.lvUserRanking.Location = new System.Drawing.Point(6, 20);
             this.lvUserRanking.Name = "lvUserRanking";
-            this.lvUserRanking.Size = new System.Drawing.Size(333, 182);
+            this.lvUserRanking.Size = new System.Drawing.Size(292, 146);
             this.lvUserRanking.TabIndex = 0;
             this.lvUserRanking.UseCompatibleStateImageBehavior = false;
             this.lvUserRanking.View = System.Windows.Forms.View.Details;
@@ -291,31 +270,27 @@
             // groupBoxServerInfo
             // 
             this.groupBoxServerInfo.Controls.Add(this.rtbServerState);
-            this.groupBoxServerInfo.Location = new System.Drawing.Point(718, 238);
-            this.groupBoxServerInfo.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.groupBoxServerInfo.Location = new System.Drawing.Point(628, 190);
             this.groupBoxServerInfo.Name = "groupBoxServerInfo";
-            this.groupBoxServerInfo.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.groupBoxServerInfo.Size = new System.Drawing.Size(347, 400);
+            this.groupBoxServerInfo.Size = new System.Drawing.Size(304, 320);
             this.groupBoxServerInfo.TabIndex = 9;
             this.groupBoxServerInfo.TabStop = false;
             this.groupBoxServerInfo.Text = "서버 상태";
             // 
             // rtbServerState
             // 
-            this.rtbServerState.Location = new System.Drawing.Point(7, 25);
-            this.rtbServerState.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.rtbServerState.Location = new System.Drawing.Point(6, 20);
             this.rtbServerState.Name = "rtbServerState";
             this.rtbServerState.ReadOnly = true;
-            this.rtbServerState.Size = new System.Drawing.Size(333, 366);
+            this.rtbServerState.Size = new System.Drawing.Size(292, 294);
             this.rtbServerState.TabIndex = 0;
             this.rtbServerState.Text = "";
             // 
             // btnClose
             // 
-            this.btnClose.Location = new System.Drawing.Point(899, 651);
-            this.btnClose.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnClose.Location = new System.Drawing.Point(787, 521);
             this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(166, 61);
+            this.btnClose.Size = new System.Drawing.Size(145, 49);
             this.btnClose.TabIndex = 10;
             this.btnClose.Text = "서버 종료";
             this.btnClose.UseVisualStyleBackColor = true;
@@ -323,31 +298,40 @@
             // 
             // btnGameStart
             // 
-            this.btnGameStart.Location = new System.Drawing.Point(718, 790);
-            this.btnGameStart.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnGameStart.Location = new System.Drawing.Point(628, 632);
             this.btnGameStart.Name = "btnGameStart";
-            this.btnGameStart.Size = new System.Drawing.Size(165, 61);
+            this.btnGameStart.Size = new System.Drawing.Size(144, 49);
             this.btnGameStart.TabIndex = 11;
             this.btnGameStart.Text = "게임 시작";
             this.btnGameStart.UseVisualStyleBackColor = true;
             this.btnGameStart.Click += new System.EventHandler(this.btnGameStart_Click);
             // 
+            // btnListen
+            // 
+            this.btnListen.Location = new System.Drawing.Point(628, 521);
+            this.btnListen.Name = "btnListen";
+            this.btnListen.Size = new System.Drawing.Size(145, 49);
+            this.btnListen.TabIndex = 7;
+            this.btnListen.Text = "서버 시작";
+            this.btnListen.UseVisualStyleBackColor = true;
+            this.btnListen.Click += new System.EventHandler(this.btnListen_Click);
+            // 
             // btnNextTurn
             // 
-            this.btnNextTurn.Location = new System.Drawing.Point(899, 790);
-            this.btnNextTurn.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.btnNextTurn.Location = new System.Drawing.Point(787, 632);
             this.btnNextTurn.Name = "btnNextTurn";
-            this.btnNextTurn.Size = new System.Drawing.Size(165, 61);
+            this.btnNextTurn.Size = new System.Drawing.Size(144, 49);
             this.btnNextTurn.TabIndex = 12;
             this.btnNextTurn.Text = "다음 턴 진행";
             this.btnNextTurn.UseVisualStyleBackColor = true;
+            this.btnNextTurn.Visible = false;
             this.btnNextTurn.Click += new System.EventHandler(this.btnNextTurn_Click);
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1082, 889);
+            this.ClientSize = new System.Drawing.Size(947, 711);
             this.Controls.Add(this.btnNextTurn);
             this.Controls.Add(this.btnGameStart);
             this.Controls.Add(this.btnClose);
@@ -357,7 +341,6 @@
             this.Controls.Add(this.groupBoxUserData);
             this.Controls.Add(this.groupBoxStockData);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "GAZUA - Server";
@@ -379,7 +362,6 @@
         private System.Windows.Forms.ListView lvUserState;
         private System.Windows.Forms.GroupBox groupBoxStockData;
         private System.Windows.Forms.GroupBox groupBoxUserData;
-        private System.Windows.Forms.Button btnListen;
         private System.Windows.Forms.GroupBox groupBoxRank;
         private System.Windows.Forms.ListView lvUserRanking;
         private System.Windows.Forms.GroupBox groupBoxServerInfo;
@@ -403,6 +385,7 @@
         private System.Windows.Forms.ColumnHeader columnRank;
         private System.Windows.Forms.ColumnHeader columnID;
         private System.Windows.Forms.ColumnHeader columnAsset;
+        private System.Windows.Forms.Button btnListen;
         private System.Windows.Forms.Button btnNextTurn;
     }
 }

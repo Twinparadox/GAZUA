@@ -324,6 +324,23 @@ namespace GAZUAServer
                 ClientList[obj.WorkingSocket] = user;
                 ClientList[obj.WorkingSocket].IsReady = 2;
                 UpdateUser(lvUserState, ClientList);
+
+                int cnt = 0;
+                int cnt_client = 0;
+                foreach(var client in ClientList)
+                {
+                    cnt_client++;
+                    if (client.Value.IsReady==2)
+                    {
+                        cnt++;
+                    }
+                }
+
+                // 모든 유저가 턴을 마친 상태면, 다음 턴으로 진행
+                if(cnt==cnt_client)
+                {
+                    NextTurn();
+                }
             }
 
             // Playing - Ranking, strType == 4
@@ -600,6 +617,34 @@ namespace GAZUAServer
             }
 
             foreach(var st in StockList)
+            {
+                st.Turn++;
+            }
+
+            SendStockMessage();
+
+            UpdateStock(lvStockState, StockList);
+            UpdateUser(lvUserState, ClientList);
+            Ranking();
+
+            AppendText(rtbServerState, string.Format("남은 턴 : " + RestTurn.ToString()));
+        }
+
+        private void NextTurn()
+        {
+            curTurn++;
+            RestTurn--;
+
+            if (RestTurn == 0)
+            {
+                ActivateButton(btnNextTurn, 0);
+                ActivateButton(btnGameStart, 1);
+                MsgBoxHelper.Info("턴 종료");
+                EndGame();
+                return;
+            }
+
+            foreach (var st in StockList)
             {
                 st.Turn++;
             }
